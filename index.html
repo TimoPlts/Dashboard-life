@@ -696,6 +696,93 @@
     .ring-svg-wrap { width: 120px; height: 120px; }
     .ring-pct { font-size: 28px; }
   }
+
+  /* ── Hub redesign ── */
+  .hub-volume-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px 18px 14px; margin-bottom: 12px; }
+  .hub-chart-title { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; }
+  .hub-chart-title span { color: var(--text-secondary); font-weight: 600; letter-spacing: 0.04em; text-transform: none; font-size: 11px; }
+  .hub-bar-chart { display: flex; align-items: flex-end; gap: 6px; height: 72px; }
+  .hub-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end; }
+  .hub-bar { width: 100%; border-radius: 4px 4px 2px 2px; background: rgba(255,255,255,0.08); transition: background 0.3s; min-height: 3px; }
+  .hub-bar.today { background: var(--accent); box-shadow: 0 0 10px rgba(224,118,88,0.35); }
+  .hub-bar.has-data { background: rgba(255,255,255,0.18); }
+  .hub-bar-label { font-family: var(--font-mono); font-size: 9px; color: var(--text-tertiary); font-weight: 600; }
+  .hub-bar-label.today { color: var(--accent); }
+
+  .hub-stats-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+  .hub-stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px 12px 12px; display: flex; flex-direction: column; gap: 4px; }
+  .hub-stat-value { font-family: var(--font-mono); font-size: 22px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.04em; font-variant-numeric: tabular-nums; line-height: 1; }
+  .hub-stat-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: var(--text-tertiary); margin-top: 2px; }
+
+  .hub-prs-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px 18px; margin-bottom: 12px; }
+  .hub-pr-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+  .hub-pr-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .hub-pr-name { flex: 1; font-size: 13px; font-weight: 600; color: var(--text-primary); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .hub-pr-weight { font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--success); }
+  .hub-pr-date { font-family: var(--font-mono); font-size: 10px; color: var(--text-tertiary); }
+
+  .hub-nav-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 4px; }
+  .hub-nav-tile { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px 14px 12px; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: background 0.15s, border-color 0.15s, transform 0.12s; -webkit-tap-highlight-color: transparent; position: relative; }
+  .hub-nav-tile:hover { background: var(--surface-hover); border-color: var(--border-strong); transform: translateY(-1px); }
+  .hub-nav-tile:active { transform: scale(0.97); }
+  .hub-nav-icon { font-size: 20px; flex-shrink: 0; }
+  .hub-nav-info { flex: 1; min-width: 0; }
+  .hub-nav-title { font-size: 13px; font-weight: 700; color: var(--text-primary); }
+  .hub-nav-stat { font-family: var(--font-mono); font-size: 10px; color: var(--text-tertiary); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .hub-nav-arrow { color: var(--text-tertiary); font-size: 14px; opacity: 0.4; flex-shrink: 0; }
+
+  /* ── Workout redesign ── */
+  .wk-day-banner { background: rgba(224,118,88,0.07); border: 1px solid rgba(224,118,88,0.2); border-radius: var(--radius-md); padding: 12px 16px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
+  .wk-day-name { font-size: 16px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.01em; }
+  .wk-day-sub { font-family: var(--font-mono); font-size: 10px; color: var(--text-tertiary); margin-top: 2px; }
+  .wk-day-badge { font-family: var(--font-mono); font-size: 10px; font-weight: 700; color: var(--accent); background: rgba(224,118,88,0.12); border-radius: 6px; padding: 3px 8px; }
+
+  .wk-empty-start { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 28px 20px; text-align: center; margin-bottom: 14px; }
+  .wk-empty-icon { font-size: 36px; margin-bottom: 10px; }
+  .wk-empty-text { font-size: 14px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; }
+  .wk-empty-sub { font-size: 12px; color: var(--text-tertiary); margin-bottom: 18px; }
+
+  .wk-ex-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px 14px 10px; margin-bottom: 10px; }
+  .wk-ex-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+  .wk-ex-name { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+  .wk-ex-last { font-family: var(--font-mono); font-size: 10px; color: var(--text-tertiary); margin-bottom: 10px; }
+  .wk-set-row { display: flex; align-items: center; gap: 7px; margin-bottom: 7px; }
+  .wk-set-num { font-family: var(--font-mono); font-size: 10.5px; color: var(--text-tertiary); width: 22px; flex-shrink: 0; font-weight: 700; }
+  .wk-set-input { padding: 8px 4px; border-radius: 9px; border: 1px solid var(--border); background: rgba(255,255,255,0.035); color: var(--text-primary); font-family: var(--font-mono); font-size: 13px; font-variant-numeric: tabular-nums; outline: none; width: 64px; transition: border-color 0.2s; text-align: center; }
+  .wk-set-input:focus { border-color: var(--border-strong); background: rgba(255,255,255,0.06); }
+  .wk-set-x { color: var(--text-tertiary); font-size: 11px; font-family: var(--font-mono); flex-shrink: 0; }
+  .wk-set-ghost { font-family: var(--font-mono); font-size: 10px; color: var(--text-tertiary); flex: 1; }
+  .wk-set-check { width: 32px; height: 32px; border-radius: 9px; border: 1.5px solid var(--border-strong); background: rgba(10,10,11,0.6); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 15px; color: transparent; transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1); flex-shrink: 0; -webkit-tap-highlight-color: transparent; user-select: none; }
+  .wk-set-check.done { background: var(--success); border-color: var(--success); color: #0A0A0B; box-shadow: 0 0 10px rgba(107,227,164,0.3); }
+
+  .wk-history-link { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 14px; padding: 10px; border-radius: var(--radius-md); border: 1px solid var(--border); background: none; color: var(--text-tertiary); font-size: 12px; font-weight: 600; cursor: pointer; width: 100%; font-family: var(--font-sans); transition: color 0.15s, border-color 0.15s; -webkit-tap-highlight-color: transparent; }
+  .wk-history-link:hover { color: var(--text-primary); border-color: var(--border-strong); }
+
+  /* ── Progression redesign ── */
+  .prog-search { position: relative; margin-bottom: 14px; }
+  .prog-search-input { width: 100%; padding: 11px 14px 11px 36px; border-radius: var(--radius-md); border: 1px solid var(--border); background: rgba(255,255,255,0.03); color: var(--text-primary); font-family: var(--font-sans); font-size: 13px; outline: none; transition: border-color 0.2s; }
+  .prog-search-input:focus { border-color: var(--border-strong); background: rgba(255,255,255,0.05); }
+  .prog-search-input::placeholder { color: var(--text-tertiary); }
+  .prog-search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-tertiary); font-size: 14px; pointer-events: none; }
+  .prog-freq-badge { font-family: var(--font-mono); font-size: 9px; color: var(--text-tertiary); background: rgba(255,255,255,0.05); border-radius: 4px; padding: 2px 6px; }
+
+  /* ── History redesign ── */
+  .hist-entry { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); margin-bottom: 8px; overflow: hidden; transition: border-color 0.15s; }
+  .hist-entry-header { padding: 13px 16px; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: background 0.15s; }
+  .hist-entry-header:hover { background: var(--surface-hover); }
+  .hist-entry-icon { font-size: 18px; flex-shrink: 0; }
+  .hist-entry-info { flex: 1; min-width: 0; }
+  .hist-entry-day { font-size: 13.5px; font-weight: 700; color: var(--text-primary); }
+  .hist-entry-meta { font-family: var(--font-mono); font-size: 10.5px; color: var(--text-tertiary); margin-top: 2px; }
+  .hist-entry-vol { font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--text-secondary); flex-shrink: 0; }
+  .hist-entry-chevron { color: var(--text-tertiary); font-size: 12px; flex-shrink: 0; transition: transform 0.2s; }
+  .hist-entry.open .hist-entry-chevron { transform: rotate(90deg); }
+  .hist-entry-detail { display: none; padding: 0 16px 14px; border-top: 1px solid var(--border); }
+  .hist-entry.open .hist-entry-detail { display: block; }
+  .hist-ex-block { margin-top: 12px; }
+  .hist-ex-name { font-size: 12px; font-weight: 700; color: var(--text-secondary); margin-bottom: 5px; }
+  .hist-set-line { font-family: var(--font-mono); font-size: 11px; color: var(--text-tertiary); margin-bottom: 3px; display: flex; gap: 12px; }
+  .hist-set-line span { color: var(--text-primary); }
 </style>
 </head>
 <body>
@@ -788,36 +875,67 @@
 
     <!-- Hub -->
     <div id="trHub" class="tr-view tr-active">
-      <div class="gym-hub-grid">
-        <div class="gym-hub-tile" data-nav="workout">
-          <div class="tile-icon">🏋️</div>
-          <div class="tile-title">Workout</div>
-          <div class="tile-stat" id="trTileWorkout">—</div>
-          <span class="tile-arrow">›</span>
+      <!-- Weekly volume bar chart -->
+      <div class="hub-volume-card">
+        <div class="hub-chart-title">Weekly Volume <span id="hubWeekTotal">—</span></div>
+        <div class="hub-bar-chart" id="hubBarChart"></div>
+      </div>
+
+      <!-- Stats strip -->
+      <div class="hub-stats-strip">
+        <div class="hub-stat-card">
+          <div class="hub-stat-value" id="hubStatSessions">—</div>
+          <div class="hub-stat-label">Sessions</div>
         </div>
-        <div class="gym-hub-tile" data-nav="progression">
-          <div class="tile-icon">📈</div>
-          <div class="tile-title">Progression</div>
-          <div class="tile-stat" id="trTileProgression">—</div>
-          <span class="tile-arrow">›</span>
+        <div class="hub-stat-card">
+          <div class="hub-stat-value" id="hubStatVolume">—</div>
+          <div class="hub-stat-label">Tonnes lifted</div>
         </div>
-        <div class="gym-hub-tile" data-nav="nutrition">
-          <div class="tile-icon">🥗</div>
-          <div class="tile-title">Nutrition</div>
-          <div class="tile-stat" id="trTileNutrition">—</div>
-          <span class="tile-arrow">›</span>
+        <div class="hub-stat-card">
+          <div class="hub-stat-value" id="hubStatStreak">—</div>
+          <div class="hub-stat-label">Best streak</div>
         </div>
-        <div class="gym-hub-tile" data-nav="body">
-          <div class="tile-icon">⚖️</div>
-          <div class="tile-title">Body</div>
-          <div class="tile-stat" id="trTileBody">—</div>
-          <span class="tile-arrow">›</span>
+      </div>
+
+      <!-- Recent PRs -->
+      <div class="hub-prs-card" id="hubPRsCard">
+        <div class="hub-chart-title" style="margin-bottom:8px;">Recent PRs</div>
+        <div id="hubPRsList"></div>
+      </div>
+
+      <!-- Nav tiles -->
+      <div class="hub-nav-grid">
+        <div class="hub-nav-tile" data-nav="workout">
+          <div class="hub-nav-icon">🏋️</div>
+          <div class="hub-nav-info">
+            <div class="hub-nav-title">Workout</div>
+            <div class="hub-nav-stat" id="trTileWorkout">—</div>
+          </div>
+          <div class="hub-nav-arrow">›</div>
         </div>
-        <div class="gym-hub-tile" data-nav="history" style="grid-column: span 2;">
-          <div class="tile-icon">📅</div>
-          <div class="tile-title">Session History</div>
-          <div class="tile-stat" id="trTileHistory">—</div>
-          <span class="tile-arrow">›</span>
+        <div class="hub-nav-tile" data-nav="progression">
+          <div class="hub-nav-icon">📈</div>
+          <div class="hub-nav-info">
+            <div class="hub-nav-title">Progression</div>
+            <div class="hub-nav-stat" id="trTileProgression">—</div>
+          </div>
+          <div class="hub-nav-arrow">›</div>
+        </div>
+        <div class="hub-nav-tile" data-nav="nutrition">
+          <div class="hub-nav-icon">🥗</div>
+          <div class="hub-nav-info">
+            <div class="hub-nav-title">Nutrition</div>
+            <div class="hub-nav-stat" id="trTileNutrition">—</div>
+          </div>
+          <div class="hub-nav-arrow">›</div>
+        </div>
+        <div class="hub-nav-tile" data-nav="body">
+          <div class="hub-nav-icon">⚖️</div>
+          <div class="hub-nav-info">
+            <div class="hub-nav-title">Body</div>
+            <div class="hub-nav-stat" id="trTileBody">—</div>
+          </div>
+          <div class="hub-nav-arrow">›</div>
         </div>
       </div>
     </div>
@@ -1116,7 +1234,7 @@ function trNav(viewId) {
   else if (viewId === 'history') trRenderHistory();
 }
 
-document.querySelectorAll('.gym-hub-tile[data-nav]').forEach(tile => {
+document.querySelectorAll('.hub-nav-tile[data-nav]').forEach(tile => {
   tile.addEventListener('click', () => trNav(tile.dataset.nav));
 });
 
@@ -1137,23 +1255,23 @@ function trRefreshTiles() {
   const routine = trGetRoutine();
   const today = getActiveDateString();
   const session = trGetSession(today);
+  const sKeys = storeListKeys('training:session:').sort();
 
-  let ws = 'No routine set';
-  if (routine.days.length > 0) {
-    if (session) {
-      const done = session.exercises.reduce((a, ex) => a + ex.sets.filter(s => s.done).length, 0);
-      const total = session.exercises.reduce((a, ex) => a + ex.sets.length, 0);
-      ws = session.done ? '✓ Session complete' : done + '/' + total + ' sets done';
-    } else {
-      ws = routine.days.length + '-day split ready';
-    }
+  // ── Workout tile ──
+  let ws = 'Tap to log today';
+  if (session) {
+    const done = session.exercises.reduce((a, ex) => a + ex.sets.filter(s => s.done).length, 0);
+    const total = session.exercises.reduce((a, ex) => a + ex.sets.length, 0);
+    ws = session.done ? '✓ Session complete' : done + '/' + total + ' sets done';
   }
   document.getElementById('trTileWorkout').textContent = ws;
 
+  // ── Progression tile ──
   const prs = trGetPRs();
   const prCount = Object.keys(prs).length;
   document.getElementById('trTileProgression').textContent = prCount > 0 ? prCount + ' exercises tracked' : 'No sessions yet';
 
+  // ── Nutrition tile ──
   const targets = storeGet('nutrition:targets');
   const nutLog = storeGet('nutrition:log:' + today);
   if (targets && nutLog) {
@@ -1165,6 +1283,7 @@ function trRefreshTiles() {
     document.getElementById('trTileNutrition').textContent = 'No targets set';
   }
 
+  // ── Body tile ──
   const bodyLog = storeGet('body:weight') || [];
   if (bodyLog.length > 0) {
     const last = bodyLog[bodyLog.length - 1];
@@ -1174,11 +1293,96 @@ function trRefreshTiles() {
     document.getElementById('trTileBody').textContent = 'No entries yet';
   }
 
-  const sKeys = storeListKeys('training:session:');
-  document.getElementById('trTileHistory').textContent = sKeys.length > 0 ? sKeys.length + ' sessions logged' : 'No history yet';
+  // ── Dashboard gym tile stat ──
+  document.getElementById('gymTileStat').textContent = ws !== 'Tap to log today' ? ws : 'Workout · Nutrition · Body';
 
-  // Update dashboard gym tile stat
-  document.getElementById('gymTileStat').textContent = ws !== 'No routine set' ? ws : 'Workout · Nutrition · Body';
+  // ── Hub: weekly volume bar chart ──
+  const barChart = document.getElementById('hubBarChart');
+  if (barChart) {
+    const days7 = [];
+    const DAY_ABBR = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const ds = d.getFullYear() + '-' + pad2(d.getMonth()+1) + '-' + pad2(d.getDate());
+      const s = storeGet('training:session:' + ds);
+      const vol = s ? s.exercises.reduce((a, ex) => a + ex.sets.filter(x => x.done).reduce((b, x) => b + x.weight * x.reps, 0), 0) : 0;
+      days7.push({ ds, vol, label: DAY_ABBR[d.getDay()], isToday: i === 0 });
+    }
+    const maxVol = Math.max(...days7.map(d => d.vol), 1);
+    const totalWeekVol = days7.reduce((a, d) => a + d.vol, 0);
+    const weekEl = document.getElementById('hubWeekTotal');
+    if (weekEl) weekEl.textContent = totalWeekVol > 0 ? (totalWeekVol / 1000).toFixed(1) + 't this week' : 'No data this week';
+    barChart.innerHTML = '';
+    days7.forEach(({ vol, label, isToday }) => {
+      const wrap = document.createElement('div');
+      wrap.className = 'hub-bar-wrap';
+      const bar = document.createElement('div');
+      const h = vol > 0 ? Math.max(6, Math.round((vol / maxVol) * 62)) : 3;
+      bar.className = 'hub-bar' + (isToday ? ' today' : (vol > 0 ? ' has-data' : ''));
+      bar.style.height = h + 'px';
+      const lbl = document.createElement('div');
+      lbl.className = 'hub-bar-label' + (isToday ? ' today' : '');
+      lbl.textContent = label;
+      wrap.appendChild(bar);
+      wrap.appendChild(lbl);
+      barChart.appendChild(wrap);
+    });
+  }
+
+  // ── Hub: stats strip ──
+  const totalSessions = sKeys.length;
+  let totalVol = 0;
+  sKeys.forEach(k => {
+    const s = storeGet(k);
+    if (!s) return;
+    totalVol += s.exercises.reduce((a, ex) => a + ex.sets.filter(x => x.done).reduce((b, x) => b + x.weight * x.reps, 0), 0);
+  });
+
+  // Compute best streak
+  const sessionDateSet = new Set(sKeys.map(k => k.slice(17)));
+  let bestStreak = 0, curStreak = 0;
+  const allDates = Array.from(sessionDateSet).sort();
+  if (allDates.length > 0) {
+    curStreak = 1; bestStreak = 1;
+    for (let i = 1; i < allDates.length; i++) {
+      const prev = new Date(allDates[i-1]);
+      const curr = new Date(allDates[i]);
+      const diff = (curr - prev) / 86400000;
+      if (diff === 1) { curStreak++; bestStreak = Math.max(bestStreak, curStreak); }
+      else { curStreak = 1; }
+    }
+  }
+
+  const ssEl = document.getElementById('hubStatSessions');
+  const svEl = document.getElementById('hubStatVolume');
+  const stEl = document.getElementById('hubStatStreak');
+  if (ssEl) ssEl.textContent = totalSessions || '0';
+  if (svEl) svEl.textContent = totalVol > 0 ? (totalVol / 1000).toFixed(1) + 't' : '0t';
+  if (stEl) stEl.textContent = bestStreak > 0 ? bestStreak + 'd' : '0d';
+
+  // ── Hub: recent PRs ──
+  const prsList = document.getElementById('hubPRsList');
+  if (prsList) {
+    const prEntries = Object.values(prs)
+      .filter(p => p.date && p.maxWeight > 0)
+      .sort((a, b) => (b.date || '').localeCompare(a.date || ''))
+      .slice(0, 3);
+    if (prEntries.length === 0) {
+      prsList.innerHTML = '<div class="empty-state" style="padding:10px 0 2px;">No PRs recorded yet.</div>';
+    } else {
+      prsList.innerHTML = '';
+      prEntries.forEach(p => {
+        const row = document.createElement('div');
+        row.className = 'hub-pr-row';
+        row.innerHTML =
+          '<div class="hub-pr-name">' + (p.name || 'Unknown') + '</div>' +
+          '<div class="hub-pr-weight">' + p.maxWeight + 'kg</div>' +
+          '<div class="hub-pr-date">' + (p.date ? formatDate(p.date) : '') + '</div>';
+        prsList.appendChild(row);
+      });
+    }
+  }
 }
 
 // ════════════════════════════════════════════════════════
@@ -1188,15 +1392,52 @@ function trRefreshTiles() {
 let trRestInterval = null;
 let trRestSecs = 0;
 
+// ── Smart day detection from history ──
+function trDetectTodayDay() {
+  const todayDow = new Date().getDay(); // 0=Sun..6=Sat
+  const sKeys = storeListKeys('training:session:').sort();
+  const dowCount = {}; // dayName -> { dow -> count }
+  const dowDayName = {}; // dow -> { dayName -> count }
+  sKeys.forEach(k => {
+    const s = storeGet(k);
+    if (!s || !s.day) return;
+    const ds = k.slice(17);
+    const [y,m,d] = ds.split('-').map(Number);
+    const dow = new Date(y, m-1, d).getDay();
+    if (!dowDayName[dow]) dowDayName[dow] = {};
+    dowDayName[dow][s.day] = (dowDayName[dow][s.day] || 0) + 1;
+  });
+  const candidates = dowDayName[todayDow];
+  if (!candidates) return null;
+  return Object.entries(candidates).sort((a,b) => b[1]-a[1])[0][0];
+}
+
+// ── Find last session data for an exercise by name ──
+function trLastSessionForEx(exName) {
+  const keys = storeListKeys('training:session:').sort().reverse();
+  for (const k of keys) {
+    const s = storeGet(k);
+    if (!s) continue;
+    const ex = s.exercises?.find(e => e.name.toLowerCase() === exName.toLowerCase());
+    if (!ex) continue;
+    const doneSets = ex.sets.filter(s => s.done && s.weight > 0);
+    if (doneSets.length === 0) continue;
+    return { date: k.slice(17), sets: doneSets };
+  }
+  return null;
+}
+
 function trRenderWorkout() {
   const container = document.getElementById('trWorkoutContent');
   container.innerHTML = '';
   const routine = trGetRoutine();
   const units = routine.units || 'kg';
   const today = getActiveDateString();
+  const todaySession = trGetSession(today);
 
+  // Units toggle (top row)
   const unitsRow = document.createElement('div');
-  unitsRow.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;';
+  unitsRow.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;';
   const unitsLabel = document.createElement('span');
   unitsLabel.style.cssText = 'font-size:10px;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.14em;font-weight:700;';
   unitsLabel.textContent = 'Units';
@@ -1213,41 +1454,121 @@ function trRenderWorkout() {
   unitsRow.appendChild(tog);
   container.appendChild(unitsRow);
 
-  if (routine.days.length === 0) {
-    const e = document.createElement('div');
-    e.className = 'card';
-    e.style.marginBottom = '14px';
-    e.innerHTML = '<div class="empty-state">No training split yet — build one below.</div>';
-    container.appendChild(e);
+  // Detect which day to suggest
+  const suggestedDay = todaySession ? todaySession.day : trDetectTodayDay();
+  const DOW_NAMES = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const todayDowName = DOW_NAMES[new Date().getDay()];
+
+  // Day selector banner
+  const hasSessions = storeListKeys('training:session:').length > 0 || routine.days.length > 0;
+
+  if (!todaySession) {
+    // Pick-a-day UI
+    const banner = document.createElement('div');
+    banner.className = 'wk-day-banner';
+    banner.innerHTML =
+      '<div><div class="wk-day-name">' + todayDowName + '</div>' +
+      '<div class="wk-day-sub">What are you training today?</div></div>' +
+      (suggestedDay ? '<div class="wk-day-badge">Suggested: ' + suggestedDay + '</div>' : '');
+    container.appendChild(banner);
+
+    // Day tabs from routine
+    if (routine.days.length > 0) {
+      const tabs = document.createElement('div');
+      tabs.className = 'tr-day-tabs';
+      tabs.style.marginBottom = '14px';
+      routine.days.forEach(day => {
+        const tab = document.createElement('button');
+        tab.className = 'tr-day-tab' + (day.name === suggestedDay ? ' active' : '');
+        tab.textContent = day.name;
+        tab.addEventListener('click', () => { trStartSessionFromRoutine(day.name, today, routine); });
+        tabs.appendChild(tab);
+      });
+      container.appendChild(tabs);
+    }
+
+    // Start empty workout button
+    const emptyWrap = document.createElement('div');
+    emptyWrap.className = 'wk-empty-start';
+    if (routine.days.length === 0) {
+      emptyWrap.innerHTML =
+        '<div class="wk-empty-icon">🏋️</div>' +
+        '<div class="wk-empty-text">No routine configured</div>' +
+        '<div class="wk-empty-sub">Start an empty workout or import your Hevy history</div>';
+    } else {
+      emptyWrap.style.paddingTop = '18px';
+      emptyWrap.style.paddingBottom = '16px';
+      emptyWrap.innerHTML = '<div class="wk-empty-sub">Or start a free-form session</div>';
+    }
+    const startBtn = document.createElement('button');
+    startBtn.className = 'tr-primary-btn';
+    startBtn.style.maxWidth = '260px';
+    startBtn.textContent = '+ Start Empty Workout';
+    startBtn.addEventListener('click', () => { trStartEmptySession(today); });
+    emptyWrap.appendChild(startBtn);
+    container.appendChild(emptyWrap);
+
+    // Auto-start if suggested
+    if (suggestedDay && routine.days.find(d => d.name === suggestedDay)) {
+      // Don't auto-start — user must confirm by tapping tab
+    }
   } else {
-    const sessionCard = document.createElement('div');
-    sessionCard.className = 'card';
-    sessionCard.style.marginBottom = '14px';
-    const sessionLabel = document.createElement('div');
-    sessionLabel.className = 'eyebrow';
-    sessionLabel.textContent = "Today's Session — " + formatDate(today);
-    sessionCard.appendChild(sessionLabel);
-
-    const tabs = document.createElement('div');
-    tabs.className = 'tr-day-tabs';
-    const session = trGetSession(today);
-    routine.days.forEach((day, i) => {
-      const tab = document.createElement('button');
-      const isActive = session ? session.day === day.name : i === 0;
-      tab.className = 'tr-day-tab' + (isActive ? ' active' : '');
-      tab.textContent = day.name;
-      tab.addEventListener('click', () => { trStartSession(day.name, today, routine); });
-      tabs.appendChild(tab);
-    });
-    sessionCard.appendChild(tabs);
-    container.appendChild(sessionCard);
-
-    trRenderSessionSets(container, today, routine, units);
+    // Active session banner
+    const banner = document.createElement('div');
+    banner.className = 'wk-day-banner';
+    const setsTotal = todaySession.exercises.reduce((a, ex) => a + ex.sets.length, 0);
+    const setsDone = todaySession.exercises.reduce((a, ex) => a + ex.sets.filter(s => s.done).length, 0);
+    banner.innerHTML =
+      '<div><div class="wk-day-name">' + todaySession.day + '</div>' +
+      '<div class="wk-day-sub">' + todayDowName + ' · ' + formatDate(today) + '</div></div>' +
+      '<div class="wk-day-badge">' + (todaySession.done ? '✓ Done' : setsDone + '/' + setsTotal) + '</div>';
+    container.appendChild(banner);
+    trRenderNewSessionSets(container, today, units);
   }
 
+  // ── Add exercises to existing session ──
+  if (todaySession && !todaySession.done) {
+    const addExCard = document.createElement('div');
+    addExCard.style.cssText = 'background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px;margin-top:4px;margin-bottom:10px;';
+    const addLabel = document.createElement('div');
+    addLabel.className = 'eyebrow';
+    addLabel.textContent = 'Add Exercise';
+    const addRow = document.createElement('div');
+    addRow.style.cssText = 'display:flex;gap:8px;';
+    const addInput = document.createElement('input');
+    addInput.className = 'tr-input';
+    addInput.placeholder = 'Exercise name…';
+    addInput.style.flex = '1';
+    const addBtn = document.createElement('button');
+    addBtn.className = 'tr-secondary-btn';
+    addBtn.textContent = '+ Add';
+    addBtn.addEventListener('click', () => {
+      const n = addInput.value.trim();
+      if (!n) return;
+      const s = trGetSession(today);
+      const last = trLastSessionForEx(n);
+      const defW = last ? last.sets[0].weight : 20;
+      const defR = last ? last.sets[0].reps : 8;
+      s.exercises.push({ id: trGenId(), name: n, sets: [
+        { weight: defW, reps: defR, done: false },
+        { weight: defW, reps: defR, done: false },
+        { weight: defW, reps: defR, done: false },
+      ]});
+      trSaveSession(today, s);
+      trRenderWorkout();
+    });
+    addInput.addEventListener('keydown', e => { if (e.key === 'Enter') addBtn.click(); });
+    addRow.appendChild(addInput);
+    addRow.appendChild(addBtn);
+    addExCard.appendChild(addLabel);
+    addExCard.appendChild(addRow);
+    container.appendChild(addExCard);
+  }
+
+  // Editor toggle
   const editBtn = document.createElement('button');
   editBtn.className = 'tr-secondary-btn';
-  editBtn.style.cssText = 'width:100%;margin-top:10px;margin-bottom:10px;';
+  editBtn.style.cssText = 'width:100%;margin-top:4px;margin-bottom:8px;';
   editBtn.textContent = '⚙️ Edit Training Split';
   let editorOpen = false;
   const editorWrap = document.createElement('div');
@@ -1260,9 +1581,16 @@ function trRenderWorkout() {
   container.appendChild(editBtn);
   trBuildRoutineEditor(editorWrap, routine, units);
   container.appendChild(editorWrap);
+
+  // History link
+  const histLink = document.createElement('button');
+  histLink.className = 'wk-history-link';
+  histLink.innerHTML = '📅 View Session History';
+  histLink.addEventListener('click', () => trNav('history'));
+  container.appendChild(histLink);
 }
 
-function trStartSession(dayName, date, routine) {
+function trStartSessionFromRoutine(dayName, date, routine) {
   const existing = trGetSession(date);
   if (existing && existing.day === dayName) return trRenderWorkout();
   const day = routine.days.find(d => d.name === dayName);
@@ -1270,23 +1598,31 @@ function trStartSession(dayName, date, routine) {
   const session = {
     day: dayName, done: false, date: date,
     exercises: day.exercises.map(ex => {
-      const t = trComputeTarget(ex);
-      return { id: ex.id, name: ex.name, sets: Array.from({ length: ex.sets }, () => ({ weight: t.weight, reps: t.reps, done: false })) };
+      const last = trLastSessionForEx(ex.name);
+      const defW = last ? last.sets[0].weight : (ex.weight || 20);
+      const defR = last ? last.sets[0].reps : (ex.repMin || 8);
+      return {
+        id: ex.id, name: ex.name,
+        sets: Array.from({ length: ex.sets || 3 }, () => ({ weight: defW, reps: defR, done: false }))
+      };
     })
   };
   trSaveSession(date, session);
   trRenderWorkout();
 }
 
-function trRenderSessionSets(container, date, routine, units) {
+function trStartEmptySession(date) {
+  const session = {
+    day: 'Workout', done: false, date: date,
+    exercises: []
+  };
+  trSaveSession(date, session);
+  trRenderWorkout();
+}
+
+function trRenderNewSessionSets(container, date, units) {
   const session = trGetSession(date);
-  if (!session) {
-    const d = document.createElement('div');
-    d.className = 'empty-state';
-    d.textContent = 'Tap a day tab above to start a session.';
-    container.appendChild(d);
-    return;
-  }
+  if (!session) return;
 
   const restEl = document.createElement('div');
   restEl.className = 'tr-rest-timer';
@@ -1296,13 +1632,14 @@ function trRenderSessionSets(container, date, routine, units) {
   document.getElementById('trRestStop').addEventListener('click', trStopRest);
 
   session.exercises.forEach((ex, exIdx) => {
+    const last = trLastSessionForEx(ex.name);
     const card = document.createElement('div');
-    card.className = 'tr-exercise-card';
+    card.className = 'wk-ex-card';
 
     const hdr = document.createElement('div');
-    hdr.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;';
+    hdr.className = 'wk-ex-header';
     const nameEl = document.createElement('div');
-    nameEl.className = 'tr-exercise-name';
+    nameEl.className = 'wk-ex-name';
     nameEl.textContent = ex.name;
     hdr.appendChild(nameEl);
     const prs = trGetPRs();
@@ -1314,40 +1651,52 @@ function trRenderSessionSets(container, date, routine, units) {
     }
     card.appendChild(hdr);
 
-    const routineEx = routine.days.flatMap(d => d.exercises).find(e => e.id === ex.id);
-    if (routineEx) {
-      const t = trComputeTarget(routineEx);
-      const tgt = document.createElement('div');
-      tgt.className = 'tr-exercise-target';
-      tgt.innerHTML = 'Target: <span class="tr-highlight">' + t.weight + units + ' × ' + t.reps + '</span>' + (t.note !== 'Same weight' ? ' <span style="color:var(--text-tertiary);font-size:10px;">(' + t.note + ')</span>' : '');
-      card.appendChild(tgt);
+    if (last) {
+      const lastEl = document.createElement('div');
+      lastEl.className = 'wk-ex-last';
+      const bestSet = last.sets.reduce((a, s) => epley(s.weight, s.reps) > epley(a.weight, a.reps) ? s : a);
+      lastEl.textContent = 'Last (' + formatDate(last.date) + '): ' + bestSet.weight + units + ' × ' + bestSet.reps;
+      card.appendChild(lastEl);
     }
 
     ex.sets.forEach((set, setIdx) => {
       const row = document.createElement('div');
-      row.className = 'tr-set-row';
+      row.className = 'wk-set-row';
+
       const num = document.createElement('div');
-      num.className = 'tr-set-num';
+      num.className = 'wk-set-num';
       num.textContent = 'S' + (setIdx + 1);
+
       const wInp = document.createElement('input');
-      wInp.className = 'tr-set-input';
+      wInp.className = 'wk-set-input';
       wInp.type = 'number';
       wInp.value = set.weight;
       wInp.min = '0';
       wInp.step = '0.5';
       wInp.inputMode = 'decimal';
+
       const xEl = document.createElement('span');
-      xEl.className = 'tr-set-x';
+      xEl.className = 'wk-set-x';
       xEl.textContent = '×';
+
       const rInp = document.createElement('input');
-      rInp.className = 'tr-set-input';
+      rInp.className = 'wk-set-input';
       rInp.type = 'number';
       rInp.value = set.reps;
       rInp.min = '0';
       rInp.step = '1';
       rInp.inputMode = 'numeric';
+
+      // Ghost text showing last session set
+      const ghost = document.createElement('div');
+      ghost.className = 'wk-set-ghost';
+      if (last && last.sets[setIdx]) {
+        const gs = last.sets[setIdx];
+        ghost.textContent = gs.weight + '×' + gs.reps;
+      }
+
       const check = document.createElement('div');
-      check.className = 'tr-set-check' + (set.done ? ' done' : '');
+      check.className = 'wk-set-check' + (set.done ? ' done' : '');
       check.textContent = set.done ? '✓' : '';
       check.addEventListener('click', () => {
         const s = trGetSession(date);
@@ -1364,10 +1713,12 @@ function trRenderSessionSets(container, date, routine, units) {
         }
         trRenderWorkout();
       });
+
       row.appendChild(num);
       row.appendChild(wInp);
       row.appendChild(xEl);
       row.appendChild(rInp);
+      row.appendChild(ghost);
       row.appendChild(check);
       card.appendChild(row);
     });
@@ -1375,26 +1726,28 @@ function trRenderSessionSets(container, date, routine, units) {
     container.appendChild(card);
   });
 
-  const allSetsDone = session.exercises.every(ex => ex.sets.every(s => s.done));
-  const completeBtn = document.createElement('button');
-  completeBtn.className = 'tr-primary-btn';
-  completeBtn.style.marginTop = '6px';
-  if (session.done) {
-    completeBtn.textContent = '✓ Session Complete';
-    completeBtn.disabled = true;
-  } else {
-    completeBtn.textContent = allSetsDone ? 'Mark Session Complete ✓' : 'Save & Complete Session';
-    completeBtn.addEventListener('click', () => {
-      const s = trGetSession(date);
-      s.done = true;
-      trSaveSession(date, s);
-      trStopRest();
-      trRenderWorkout();
-      trRefreshTiles();
-    });
+  if (session.exercises.length > 0) {
+    const completeBtn = document.createElement('button');
+    completeBtn.className = 'tr-primary-btn';
+    completeBtn.style.marginTop = '4px';
+    if (session.done) {
+      completeBtn.textContent = '✓ Session Complete';
+      completeBtn.disabled = true;
+    } else {
+      completeBtn.textContent = 'Complete Session ✓';
+      completeBtn.addEventListener('click', () => {
+        const s = trGetSession(date);
+        s.done = true;
+        trSaveSession(date, s);
+        trStopRest();
+        trRenderWorkout();
+        trRefreshTiles();
+      });
+    }
+    container.appendChild(completeBtn);
   }
-  container.appendChild(completeBtn);
 }
+
 
 function trStartRest() {
   trStopRest();
@@ -1609,63 +1962,134 @@ function trRenderProgression() {
   const routine = trGetRoutine();
   const units = routine.units || 'kg';
   const prs = trGetPRs();
-  const allEx = routine.days.flatMap(d => d.exercises);
 
-  if (allEx.length === 0) {
-    container.innerHTML = '<div class="empty-state" style="padding:40px 0;">Build a routine first to track progression.</div>';
+  // Auto-discover exercises from all session data
+  const exFrequency = {}; // name -> { id, count, lastDate }
+  const sKeys = storeListKeys('training:session:').sort();
+  sKeys.forEach(k => {
+    const s = storeGet(k);
+    if (!s) return;
+    const date = k.slice(17);
+    s.exercises?.forEach(ex => {
+      if (!ex.name) return;
+      if (!exFrequency[ex.name]) exFrequency[ex.name] = { id: ex.id, count: 0, lastDate: '' };
+      exFrequency[ex.name].count++;
+      if (date > exFrequency[ex.name].lastDate) exFrequency[ex.name].lastDate = date;
+    });
+  });
+
+  // Also include routine exercises (they may not have sessions yet)
+  routine.days.flatMap(d => d.exercises).forEach(ex => {
+    if (!exFrequency[ex.name]) exFrequency[ex.name] = { id: ex.id, count: 0, lastDate: '' };
+  });
+
+  const allExNames = Object.keys(exFrequency).sort((a, b) => exFrequency[b].count - exFrequency[a].count);
+
+  if (allExNames.length === 0) {
+    container.innerHTML = '<div class="empty-state" style="padding:40px 0;">No sessions found. Log a workout or import from Hevy.</div>';
     return;
   }
 
-  allEx.forEach(ex => {
-    const card = document.createElement('div');
-    card.className = 'tr-prog-exercise';
+  // Search input
+  const searchWrap = document.createElement('div');
+  searchWrap.className = 'prog-search';
+  const searchIcon = document.createElement('div');
+  searchIcon.className = 'prog-search-icon';
+  searchIcon.textContent = '🔍';
+  const searchInput = document.createElement('input');
+  searchInput.className = 'prog-search-input';
+  searchInput.placeholder = 'Search exercises…';
+  searchInput.type = 'text';
+  searchWrap.appendChild(searchIcon);
+  searchWrap.appendChild(searchInput);
+  container.appendChild(searchWrap);
 
-    const hdr = document.createElement('div');
-    hdr.className = 'tr-prog-ex-header';
-    const nm = document.createElement('div');
-    nm.className = 'tr-prog-ex-name';
-    nm.textContent = ex.name;
-    hdr.appendChild(nm);
-    const t = trComputeTarget(ex);
-    const nx = document.createElement('div');
-    nx.className = 'tr-prog-ex-next';
-    nx.textContent = 'Next: ' + t.weight + units + ' × ' + t.reps;
-    hdr.appendChild(nx);
-    card.appendChild(hdr);
+  const listWrap = document.createElement('div');
+  container.appendChild(listWrap);
 
-    const pr = prs[ex.id];
-    if (pr) {
-      const prRow = document.createElement('div');
-      prRow.className = 'tr-prog-pr-row';
-      [[pr.maxWeight + units, 'Best Weight'], [pr.maxE1RM + units, 'Est. 1RM']].forEach(([val, lbl], i) => {
-        const b = document.createElement('div');
-        b.className = 'tr-pr-badge' + (pr.newToday ? ' new-pr' : '');
-        b.innerHTML = '<div class="tr-pr-value">' + val + '</div><div class="tr-pr-label">' + lbl + (i===0 && pr.newToday ? ' <span class="tr-new-pr-flash">🏆 New PR!</span>' : '') + '</div>';
-        prRow.appendChild(b);
-      });
-      card.appendChild(prRow);
+  function renderExList(filter) {
+    listWrap.innerHTML = '';
+    const filtered = allExNames.filter(n => !filter || n.toLowerCase().includes(filter.toLowerCase()));
+    if (filtered.length === 0) {
+      listWrap.innerHTML = '<div class="empty-state">No exercises match "' + filter + '"</div>';
+      return;
     }
+    filtered.forEach(exName => {
+      const info = exFrequency[exName];
+      const exId = info.id;
+      const pr = prs[exId];
+      const history = trGetExHistoryByName(exName);
 
-    const history = trGetExHistory(ex.id);
-    if (history.length >= 2) {
-      const cw = document.createElement('div');
-      cw.className = 'tr-chart-wrap';
-      cw.appendChild(trLineChart(history.map(h => h.e1rm), '#6BE3A4'));
-      card.appendChild(cw);
-      const cl = document.createElement('div');
-      cl.style.cssText = 'font-size:10px;color:var(--text-tertiary);text-align:center;margin-top:6px;';
-      cl.textContent = 'Est. 1RM trend (' + history.length + ' sessions)';
-      card.appendChild(cl);
-    } else {
-      const nd = document.createElement('div');
-      nd.className = 'empty-state';
-      nd.style.padding = '10px 0';
-      nd.textContent = 'Log at least 2 sessions to see trend.';
-      card.appendChild(nd);
-    }
+      const card = document.createElement('div');
+      card.className = 'tr-prog-exercise';
 
-    container.appendChild(card);
-  });
+      const hdr = document.createElement('div');
+      hdr.className = 'tr-prog-ex-header';
+      const nm = document.createElement('div');
+      nm.style.display = 'flex';
+      nm.style.alignItems = 'center';
+      nm.style.gap = '8px';
+      const nmText = document.createElement('div');
+      nmText.className = 'tr-prog-ex-name';
+      nmText.textContent = exName;
+      nm.appendChild(nmText);
+      if (info.count > 1) {
+        const freq = document.createElement('span');
+        freq.className = 'prog-freq-badge';
+        freq.textContent = info.count + 'x';
+        nm.appendChild(freq);
+      }
+      hdr.appendChild(nm);
+
+      if (pr) {
+        const nx = document.createElement('div');
+        nx.className = 'tr-prog-ex-next';
+        nx.textContent = pr.maxWeight + units + ' PR';
+        hdr.appendChild(nx);
+      }
+      card.appendChild(hdr);
+
+      if (pr) {
+        const prRow = document.createElement('div');
+        prRow.className = 'tr-prog-pr-row';
+        [[pr.maxWeight + units, 'Best Weight'], [pr.maxE1RM + units, 'Est. 1RM']].forEach(([val, lbl], i) => {
+          const b = document.createElement('div');
+          b.className = 'tr-pr-badge' + (pr.newToday ? ' new-pr' : '');
+          b.innerHTML = '<div class="tr-pr-value">' + val + '</div><div class="tr-pr-label">' + lbl + (i===0 && pr.newToday ? ' <span class="tr-new-pr-flash">🏆 PR!</span>' : '') + '</div>';
+          prRow.appendChild(b);
+        });
+        card.appendChild(prRow);
+      }
+
+      if (history.length >= 2) {
+        const cw = document.createElement('div');
+        cw.className = 'tr-chart-wrap';
+        cw.appendChild(trLineChart(history.map(h => h.e1rm), '#6BE3A4'));
+        card.appendChild(cw);
+        const cl = document.createElement('div');
+        cl.style.cssText = 'font-size:10px;color:var(--text-tertiary);text-align:center;margin-top:6px;';
+        cl.textContent = 'Est. 1RM trend · ' + history.length + ' sessions';
+        card.appendChild(cl);
+      } else if (history.length === 1) {
+        const nd = document.createElement('div');
+        nd.className = 'empty-state';
+        nd.style.padding = '8px 0';
+        nd.textContent = 'Log 1 more session to see trend.';
+        card.appendChild(nd);
+      } else {
+        const nd = document.createElement('div');
+        nd.className = 'empty-state';
+        nd.style.padding = '8px 0';
+        nd.textContent = 'No logged sets yet.';
+        card.appendChild(nd);
+      }
+
+      listWrap.appendChild(card);
+    });
+  }
+
+  renderExList('');
+  searchInput.addEventListener('input', () => renderExList(searchInput.value));
 }
 
 function trGetExHistory(exId) {
@@ -1675,6 +2099,23 @@ function trGetExHistory(exId) {
     const s = storeGet(key);
     if (!s) continue;
     const ex = s.exercises?.find(e => e.id === exId);
+    if (!ex) continue;
+    const done = ex.sets.filter(s => s.done && s.weight > 0 && s.reps > 0);
+    if (!done.length) continue;
+    const best = Math.max(...done.map(s => epley(s.weight, s.reps)));
+    const vol = done.reduce((a, s) => a + s.weight * s.reps, 0);
+    out.push({ date: key.slice(17), e1rm: Math.round(best * 10) / 10, volume: Math.round(vol) });
+  }
+  return out;
+}
+
+function trGetExHistoryByName(exName) {
+  const keys = storeListKeys('training:session:').sort();
+  const out = [];
+  for (const key of keys) {
+    const s = storeGet(key);
+    if (!s) continue;
+    const ex = s.exercises?.find(e => e.name?.toLowerCase() === exName.toLowerCase());
     if (!ex) continue;
     const done = ex.sets.filter(s => s.done && s.weight > 0 && s.reps > 0);
     if (!done.length) continue;
@@ -2110,7 +2551,7 @@ function trRenderHistory() {
   const container = document.getElementById('trHistoryContent');
   container.innerHTML = '';
 
-  // Import button always visible at top
+  // Import button always at top
   const importBtn = document.createElement('button');
   importBtn.className = 'tr-secondary-btn';
   importBtn.style.cssText = 'width:100%;margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:8px;';
@@ -2133,52 +2574,67 @@ function trRenderHistory() {
     const session = storeGet(key);
     if (!session) return;
     const dateStr = key.slice(17);
-    const total = session.exercises.reduce((a, ex) => a + ex.sets.length, 0);
-    const done = session.exercises.reduce((a, ex) => a + ex.sets.filter(s => s.done).length, 0);
+    const doneSets = session.exercises.reduce((a, ex) => a + ex.sets.filter(s => s.done).length, 0);
+    const totalSets = session.exercises.reduce((a, ex) => a + ex.sets.length, 0);
     const vol = session.exercises.reduce((a, ex) => a + ex.sets.filter(s => s.done).reduce((b, s) => b + s.weight * s.reps, 0), 0);
+    const exNames = session.exercises.map(ex => ex.name).join(', ');
 
     const entry = document.createElement('div');
-    entry.className = 'tr-history-entry';
-    entry.innerHTML =
-      '<div class="tr-history-date">' + formatDate(dateStr) + '</div>' +
-      '<div class="tr-history-day">' + session.day + (session.done ? ' <span style="color:var(--success);">✓</span>' : '') + '</div>' +
-      '<div class="tr-history-meta">' + done + '/' + total + ' sets · ' + Math.round(vol).toLocaleString() + ' kg vol · ' + session.exercises.length + ' exercises</div>';
-    entry.addEventListener('click', () => trHistoryDetail(container, session, dateStr));
-    container.appendChild(entry);
-  });
-}
+    entry.className = 'hist-entry';
 
-function trHistoryDetail(container, session, dateStr) {
-  container.innerHTML = '';
-  const bb = document.createElement('button');
-  bb.className = 'tr-secondary-btn';
-  bb.style.marginBottom = '16px';
-  bb.textContent = '← All Sessions';
-  bb.addEventListener('click', () => trRenderHistory());
-  container.appendChild(bb);
+    const header = document.createElement('div');
+    header.className = 'hist-entry-header';
+    const icon = document.createElement('div');
+    icon.className = 'hist-entry-icon';
+    icon.textContent = session.done ? '✅' : '🏋️';
+    const info = document.createElement('div');
+    info.className = 'hist-entry-info';
+    info.innerHTML =
+      '<div class="hist-entry-day">' + session.day + '</div>' +
+      '<div class="hist-entry-meta">' + formatDate(dateStr) + ' · ' + session.exercises.length + ' exercises · ' + doneSets + '/' + totalSets + ' sets</div>';
+    const volEl = document.createElement('div');
+    volEl.className = 'hist-entry-vol';
+    volEl.textContent = vol > 0 ? (vol >= 1000 ? (vol/1000).toFixed(1) + 't' : Math.round(vol) + 'kg') : '—';
+    const chev = document.createElement('div');
+    chev.className = 'hist-entry-chevron';
+    chev.textContent = '›';
+    header.appendChild(icon);
+    header.appendChild(info);
+    header.appendChild(volEl);
+    header.appendChild(chev);
 
-  const hdr = document.createElement('div');
-  hdr.style.marginBottom = '16px';
-  hdr.innerHTML = '<div style="font-size:19px;font-weight:800;color:var(--text-primary);letter-spacing:-0.02em;">' + session.day + (session.done ? ' <span style="color:var(--success);">✓</span>' : '') + '</div><div style="font-family:var(--font-mono);font-size:11px;color:var(--text-tertiary);margin-top:4px;">' + formatDate(dateStr) + '</div>';
-  container.appendChild(hdr);
+    // Inline detail panel
+    const detail = document.createElement('div');
+    detail.className = 'hist-entry-detail';
 
-  session.exercises.forEach(ex => {
-    const card = document.createElement('div');
-    card.className = 'tr-session-detail';
-    const nm = document.createElement('div');
-    nm.style.cssText = 'font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:10px;';
-    nm.textContent = ex.name;
-    card.appendChild(nm);
-    ex.sets.forEach((s, i) => {
-      if (!s.done) return;
-      const r = document.createElement('div');
-      r.style.cssText = 'display:flex;gap:10px;margin-bottom:5px;font-family:var(--font-mono);font-size:12px;';
-      r.innerHTML = '<span style="color:var(--text-tertiary);width:26px;">S' + (i+1) + '</span>' +
-        '<span style="color:var(--text-primary);">' + s.weight + ' kg × ' + s.reps + '</span>' +
-        '<span style="color:var(--text-tertiary);">≈ ' + (Math.round(epley(s.weight,s.reps)*10)/10) + ' e1RM</span>';
-      card.appendChild(r);
+    session.exercises.forEach(ex => {
+      const exBlock = document.createElement('div');
+      exBlock.className = 'hist-ex-block';
+      const exName = document.createElement('div');
+      exName.className = 'hist-ex-name';
+      exName.textContent = ex.name;
+      exBlock.appendChild(exName);
+      ex.sets.forEach((s, i) => {
+        if (!s.done) return;
+        const line = document.createElement('div');
+        line.className = 'hist-set-line';
+        line.innerHTML =
+          '<span>S' + (i+1) + '</span>' +
+          '<span>' + s.weight + ' kg × ' + s.reps + '</span>' +
+          '<span style="color:var(--text-tertiary);">≈ ' + (Math.round(epley(s.weight,s.reps)*10)/10) + ' e1RM</span>';
+        exBlock.appendChild(line);
+      });
+      detail.appendChild(exBlock);
     });
-    container.appendChild(card);
+
+    header.addEventListener('click', () => {
+      const isOpen = entry.classList.contains('open');
+      entry.classList.toggle('open', !isOpen);
+    });
+
+    entry.appendChild(header);
+    entry.appendChild(detail);
+    container.appendChild(entry);
   });
 }
 
