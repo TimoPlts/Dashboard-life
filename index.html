@@ -685,6 +685,8 @@
     margin: 14px 0;
   }
 
+  @keyframes spin { to { transform: rotate(360deg); } }
+
   @media (max-width: 380px) {
     body { padding: 20px 14px 52px; }
     .dash-title { font-size: 26px; }
@@ -992,7 +994,59 @@
 const WAKE_HOUR = 8;
 const SLEEP_HOUR = 24;
 
-// ── Storage helpers ──
+// ── Supabase client ──
+const SUPABASE_URL = 'https://qoflumocndwzegzbjpkm.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvZmx1bW9jbmR3emVnemJqcGttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1NDk4MDIsImV4cCI6MjA5NzEyNTgwMn0.yot7wHj6ScpnBwOGg_Ted4jsonKJL32vFuvNtCXYKEo';
+
+function sbHeaders(extra) {
+  return Object.assign({ 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }, extra || {});
+}
+async function sbSelect(table, query) {
+  const r = await fetch(SUPABASE_URL + '/rest/v1/' + table + (query ? '?' + query : ''), { headers: sbHeaders() });
+  if (!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+async function sbUpsert(table, data) {
+  const r = await fetch(SUPABASE_URL + '/rest/v1/' + table, {
+    method: 'POST',
+    headers: sbHeaders({ 'Prefer': 'resolution=merge-duplicates,return=minimal' }),
+    body: JSON.stringify(data)
+  });
+  if (!r.ok) throw new Error(await r.text());
+}
+async function sbInsert(table, data) {
+  const r = await fetch(SUPABASE_URL + '/rest/v1/' + table, {
+    method: 'POST',
+    headers: sbHeaders({ 'Prefer': 'return=minimal' }),
+    body: JSON.stringify(data)
+  });
+  if (!r.ok) throw new Error(await r.text());
+}
+async function sbDelete(table, query) {
+  const r = await fetch(SUPABASE_URL + '/rest/v1/' + table + '?' + query, {
+    method: 'DELETE',
+    headers: sbHeaders()
+  });
+  if (!r.ok) throw new Error(await r.text());
+}
+
+// ── Toast ──
+function showToast(msg, type) {
+  const t = document.createElement('div');
+  const ok = type !== 'error';
+  t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);padding:10px 18px;border-radius:10px;font-size:12.5px;font-weight:600;z-index:9999;pointer-events:none;transition:opacity 0.3s;white-space:nowrap;' +
+    (ok ? 'background:rgba(107,227,164,0.12);border:1px solid rgba(107,227,164,0.25);color:#6BE3A4;' : 'background:rgba(255,107,107,0.12);border:1px solid rgba(255,107,107,0.25);color:#FF6B6B;');
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3000);
+}
+
+// ── Loading helper ──
+function showLoading(container) {
+  container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;padding:48px 0;color:var(--text-tertiary);font-size:12px;font-family:var(--font-mono);letter-spacing:0.1em;gap:10px;"><span style="width:16px;height:16px;border:2px solid rgba(255,255,255,0.14);border-top-color:var(--text-primary);border-radius:50%;display:inline-block;animation:spin 0.7s linear infinite;"></span>Loading</div>';
+}
+
+// ── localStorage fallback helpers (used only during migration) ──
 function storeGet(key) {
   try { return JSON.parse(localStorage.getItem(key)); } catch { return null; }
 }
@@ -1007,6 +1061,112 @@ function storeListKeys(prefix) {
     if (k && k.startsWith(prefix)) keys.push(k);
   }
   return keys;
+}
+
+// ── Supabase data layer ──
+async function dbGetSession(date) {
+  try {
+    const rows = await sbSelect('sessions', 'date=eq.' + date);
+    return rows[0]?.data || null;
+  } catch(e) { showToast('Load session failed: ' + e.message, 'error'); return null; }
+}
+async function dbSaveSession(date, session) {
+  await sbUpsert('sessions', { id: date, date, day_name: session.day || '', done: !!session.done, data: session });
+}
+async function dbListSessions() {
+  try {
+    return await sbSelect('sessions', 'order=date.desc');
+  } catch(e) { showToast('Load sessions failed', 'error'); return []; }
+}
+async function dbDeleteSession(date) {
+  await sbDelete('sessions', 'date=eq.' + date);
+}
+
+async function dbGetPRs() {
+  try {
+    const rows = await sbSelect('prs');
+    const out = {};
+    rows.forEach(r => {
+      out[r.exercise_id] = { maxWeight: r.max_weight, maxE1RM: r.max_e1rm, name: r.exercise_name, date: r.pr_date };
+    });
+    return out;
+  } catch(e) { return {}; }
+}
+async function dbSavePR(exId, pr) {
+  await sbUpsert('prs', { exercise_id: exId, exercise_name: pr.name || '', max_weight: pr.maxWeight || 0, max_e1rm: pr.maxE1RM || 0, pr_date: pr.date || '' });
+}
+
+async function dbGetRoutine() {
+  try {
+    const rows = await sbSelect('routine', 'id=eq.1');
+    if (!rows[0]) return { units: 'kg', days: [] };
+    return { units: rows[0].units || 'kg', days: rows[0].data || [] };
+  } catch(e) { return { units: 'kg', days: [] }; }
+}
+async function dbSaveRoutine(r) {
+  await sbUpsert('routine', { id: 1, units: r.units || 'kg', data: r.days || [] });
+}
+
+async function dbGetBodyWeight() {
+  try { return await sbSelect('body_weight', 'order=date.asc'); } catch(e) { return []; }
+}
+async function dbAddBodyWeight(entry) {
+  await sbInsert('body_weight', { date: entry.date, kg: entry.kg, measurements: entry.measurements || null });
+}
+async function dbDeleteBodyWeight(id) {
+  await sbDelete('body_weight', 'id=eq.' + id);
+}
+
+async function dbGetNutritionLog(date) {
+  try {
+    const rows = await sbSelect('nutrition_log', 'date=eq.' + date);
+    return rows[0] || null;
+  } catch(e) { return null; }
+}
+async function dbSaveNutritionLog(date, entry) {
+  await sbUpsert('nutrition_log', { date, kcal: entry.kcal||0, protein: entry.protein||0, carbs: entry.carbs||0, fat: entry.fat||0 });
+}
+
+async function dbGetNutritionTargets() {
+  try {
+    const rows = await sbSelect('nutrition_targets', 'id=eq.1');
+    return rows[0] || null;
+  } catch(e) { return null; }
+}
+async function dbSaveNutritionTargets(t) {
+  await sbUpsert('nutrition_targets', { id: 1, mode: t.mode||'maintain', kcal: t.kcal||2200, protein: t.protein||170, carbs: t.carbs||220, fat: t.fat||60 });
+}
+
+// ── One-time migration from localStorage → Supabase ──
+async function migrateFromLocalStorage() {
+  if (localStorage.getItem('sb_migrated')) return;
+  const sessionKeys = storeListKeys('training:session:');
+  if (sessionKeys.length === 0 && !storeGet('training:prs') && !storeGet('training:routine')) {
+    localStorage.setItem('sb_migrated', '1');
+    return;
+  }
+  showToast('Migrating local data to Supabase…', 'ok');
+  try {
+    for (const k of sessionKeys) {
+      const s = storeGet(k);
+      if (s) await dbSaveSession(k.slice(17), s);
+    }
+    const prs = storeGet('training:prs') || {};
+    for (const [exId, pr] of Object.entries(prs)) await dbSavePR(exId, pr);
+    const routine = storeGet('training:routine');
+    if (routine) await dbSaveRoutine(routine);
+    const bw = storeGet('body:weight') || [];
+    for (const e of bw) await dbAddBodyWeight(e);
+    const targets = storeGet('nutrition:targets');
+    if (targets) await dbSaveNutritionTargets(targets);
+    const today = getActiveDateString();
+    const nlog = storeGet('nutrition:log:' + today);
+    if (nlog) await dbSaveNutritionLog(today, nlog);
+    localStorage.setItem('sb_migrated', '1');
+    showToast('Migration complete ✓', 'ok');
+  } catch(e) {
+    showToast('Migration error: ' + e.message, 'error');
+  }
 }
 
 // ── Date helpers ──
@@ -1066,7 +1226,6 @@ function updateDashDate() {
   const d = getActiveDateString();
   document.getElementById('dashDate').textContent = formatDateLong(d);
 }
-updateDashDate();
 
 // ── Goal Ticker (reads from localStorage goals: keys) ──
 let tickerInterval = null;
@@ -1131,8 +1290,6 @@ function startTicker() {
   if (tickerInterval) clearInterval(tickerInterval);
   tickerInterval = setInterval(() => tick(false), 5000);
 }
-
-startTicker();
 
 // ── Day Ring ──
 const CIRC = 2 * Math.PI * 52;
@@ -1211,9 +1368,6 @@ function updateDayBar() {
   }
 }
 
-updateDayBar();
-setInterval(updateDayBar, 60 * 1000);
-
 // ════════════════════════════════════════════════════════
 // TRAINING MODULE
 // ════════════════════════════════════════════════════════
@@ -1225,7 +1379,7 @@ function trNav(viewId) {
   const target = document.getElementById(idMap[viewId]);
   if (!target) return;
   target.classList.add('tr-active');
-  storeSet('training:lastView', viewId);
+  localStorage.setItem('training:lastView', viewId);
   if (viewId === 'hub') trRefreshTiles();
   else if (viewId === 'workout') trRenderWorkout();
   else if (viewId === 'progression') trRenderProgression();
@@ -1243,50 +1397,95 @@ document.querySelectorAll('.back-btn[data-back]').forEach(btn => {
 });
 
 function trGenId() { return Math.random().toString(36).slice(2, 10); }
-function trGetRoutine() { return storeGet('training:routine') || { units: 'kg', days: [] }; }
-function trSaveRoutine(r) { storeSet('training:routine', r); }
-function trGetSession(date) { return storeGet('training:session:' + date); }
-function trSaveSession(date, s) { storeSet('training:session:' + date, s); }
-function trGetPRs() { return storeGet('training:prs') || {}; }
-function trSavePRs(p) { storeSet('training:prs', p); }
 function epley(w, r) { return r === 1 ? w : w * (1 + r / 30); }
 
-function trRefreshTiles() {
-  const routine = trGetRoutine();
+// In-memory cache to avoid redundant fetches within a single render cycle
+let _routineCache = null;
+let _prsCache = null;
+let _sessionsCache = null; // array of session rows
+
+async function trGetRoutine() {
+  if (_routineCache) return _routineCache;
+  _routineCache = await dbGetRoutine();
+  return _routineCache;
+}
+async function trSaveRoutine(r) {
+  _routineCache = r;
+  await dbSaveRoutine(r);
+}
+
+async function trGetSession(date) {
+  return dbGetSession(date);
+}
+async function trSaveSession(date, s) {
+  await dbSaveSession(date, s);
+  // invalidate sessions cache
+  _sessionsCache = null;
+}
+
+async function trGetPRs() {
+  if (_prsCache) return _prsCache;
+  _prsCache = await dbGetPRs();
+  return _prsCache;
+}
+async function trSavePRs(p) {
+  _prsCache = p;
+  // save each PR individually
+  for (const [exId, pr] of Object.entries(p)) {
+    await dbSavePR(exId, pr);
+  }
+}
+
+async function trGetAllSessions() {
+  if (_sessionsCache) return _sessionsCache;
+  _sessionsCache = await dbListSessions();
+  return _sessionsCache;
+}
+
+function invalidateCaches() {
+  _routineCache = null;
+  _prsCache = null;
+  _sessionsCache = null;
+}
+
+async function trRefreshTiles() {
+  const [routine, allSessions, prs, todaySession, nutTargets, nutLog, bodyRows] = await Promise.all([
+    trGetRoutine(),
+    trGetAllSessions(),
+    trGetPRs(),
+    dbGetSession(getActiveDateString()),
+    dbGetNutritionTargets(),
+    dbGetNutritionLog(getActiveDateString()),
+    dbGetBodyWeight()
+  ]);
   const today = getActiveDateString();
-  const session = trGetSession(today);
-  const sKeys = storeListKeys('training:session:').sort();
 
   // ── Workout tile ──
   let ws = 'Tap to log today';
-  if (session) {
-    const done = session.exercises.reduce((a, ex) => a + ex.sets.filter(s => s.done).length, 0);
-    const total = session.exercises.reduce((a, ex) => a + ex.sets.length, 0);
-    ws = session.done ? '✓ Session complete' : done + '/' + total + ' sets done';
+  if (todaySession) {
+    const done = todaySession.exercises.reduce((a, ex) => a + ex.sets.filter(s => s.done).length, 0);
+    const total = todaySession.exercises.reduce((a, ex) => a + ex.sets.length, 0);
+    ws = todaySession.done ? '✓ Session complete' : done + '/' + total + ' sets done';
   }
   document.getElementById('trTileWorkout').textContent = ws;
 
   // ── Progression tile ──
-  const prs = trGetPRs();
   const prCount = Object.keys(prs).length;
   document.getElementById('trTileProgression').textContent = prCount > 0 ? prCount + ' exercises tracked' : 'No sessions yet';
 
   // ── Nutrition tile ──
-  const targets = storeGet('nutrition:targets');
-  const nutLog = storeGet('nutrition:log:' + today);
-  if (targets && nutLog) {
+  if (nutTargets && nutLog) {
     const p = nutLog.protein || 0, c = nutLog.carbs || 0, f = nutLog.fat || 0;
     document.getElementById('trTileNutrition').textContent = p + 'g P · ' + c + 'g C · ' + f + 'g F';
-  } else if (targets) {
+  } else if (nutTargets) {
     document.getElementById('trTileNutrition').textContent = 'Targets set — log today';
   } else {
     document.getElementById('trTileNutrition').textContent = 'No targets set';
   }
 
   // ── Body tile ──
-  const bodyLog = storeGet('body:weight') || [];
-  if (bodyLog.length > 0) {
-    const last = bodyLog[bodyLog.length - 1];
+  if (bodyRows.length > 0) {
+    const last = bodyRows[bodyRows.length - 1];
     const u = routine.units || 'kg';
     document.getElementById('trTileBody').textContent = u === 'lb' ? (last.kg * 2.20462).toFixed(1) + ' lb' : last.kg + ' kg';
   } else {
@@ -1295,6 +1494,10 @@ function trRefreshTiles() {
 
   // ── Dashboard gym tile stat ──
   document.getElementById('gymTileStat').textContent = ws !== 'Tap to log today' ? ws : 'Workout · Nutrition · Body';
+
+  // Build a date→session data lookup from allSessions rows
+  const sessionByDate = {};
+  allSessions.forEach(row => { if (row.data) sessionByDate[row.date] = row.data; });
 
   // ── Hub: weekly volume bar chart ──
   const barChart = document.getElementById('hubBarChart');
@@ -1305,7 +1508,7 @@ function trRefreshTiles() {
       const d = new Date();
       d.setDate(d.getDate() - i);
       const ds = d.getFullYear() + '-' + pad2(d.getMonth()+1) + '-' + pad2(d.getDate());
-      const s = storeGet('training:session:' + ds);
+      const s = sessionByDate[ds];
       const vol = s ? s.exercises.reduce((a, ex) => a + ex.sets.filter(x => x.done).reduce((b, x) => b + x.weight * x.reps, 0), 0) : 0;
       days7.push({ ds, vol, label: DAY_ABBR[d.getDay()], isToday: i === 0 });
     }
@@ -1331,24 +1534,20 @@ function trRefreshTiles() {
   }
 
   // ── Hub: stats strip ──
-  const totalSessions = sKeys.length;
+  const totalSessions = allSessions.length;
   let totalVol = 0;
-  sKeys.forEach(k => {
-    const s = storeGet(k);
+  allSessions.forEach(row => {
+    const s = row.data;
     if (!s) return;
     totalVol += s.exercises.reduce((a, ex) => a + ex.sets.filter(x => x.done).reduce((b, x) => b + x.weight * x.reps, 0), 0);
   });
 
-  // Compute best streak
-  const sessionDateSet = new Set(sKeys.map(k => k.slice(17)));
+  const allDates = allSessions.map(r => r.date).sort();
   let bestStreak = 0, curStreak = 0;
-  const allDates = Array.from(sessionDateSet).sort();
   if (allDates.length > 0) {
     curStreak = 1; bestStreak = 1;
     for (let i = 1; i < allDates.length; i++) {
-      const prev = new Date(allDates[i-1]);
-      const curr = new Date(allDates[i]);
-      const diff = (curr - prev) / 86400000;
+      const diff = (new Date(allDates[i]) - new Date(allDates[i-1])) / 86400000;
       if (diff === 1) { curStreak++; bestStreak = Math.max(bestStreak, curStreak); }
       else { curStreak = 1; }
     }
@@ -1393,16 +1592,13 @@ let trRestInterval = null;
 let trRestSecs = 0;
 
 // ── Smart day detection from history ──
-function trDetectTodayDay() {
-  const todayDow = new Date().getDay(); // 0=Sun..6=Sat
-  const sKeys = storeListKeys('training:session:').sort();
-  const dowCount = {}; // dayName -> { dow -> count }
-  const dowDayName = {}; // dow -> { dayName -> count }
-  sKeys.forEach(k => {
-    const s = storeGet(k);
-    if (!s || !s.day) return;
-    const ds = k.slice(17);
-    const [y,m,d] = ds.split('-').map(Number);
+function trDetectTodayDay(allSessions) {
+  const todayDow = new Date().getDay();
+  const dowDayName = {};
+  allSessions.forEach(row => {
+    const s = row.data;
+    if (!s || !s.day || !row.date) return;
+    const [y,m,d] = row.date.split('-').map(Number);
     const dow = new Date(y, m-1, d).getDay();
     if (!dowDayName[dow]) dowDayName[dow] = {};
     dowDayName[dow][s.day] = (dowDayName[dow][s.day] || 0) + 1;
@@ -1413,27 +1609,28 @@ function trDetectTodayDay() {
 }
 
 // ── Find last session data for an exercise by name ──
-function trLastSessionForEx(exName) {
-  const keys = storeListKeys('training:session:').sort().reverse();
-  for (const k of keys) {
-    const s = storeGet(k);
+function trLastSessionForEx(allSessions, exName) {
+  const sorted = [...allSessions].sort((a,b) => b.date.localeCompare(a.date));
+  for (const row of sorted) {
+    const s = row.data;
     if (!s) continue;
     const ex = s.exercises?.find(e => e.name.toLowerCase() === exName.toLowerCase());
     if (!ex) continue;
     const doneSets = ex.sets.filter(s => s.done && s.weight > 0);
     if (doneSets.length === 0) continue;
-    return { date: k.slice(17), sets: doneSets };
+    return { date: row.date, sets: doneSets };
   }
   return null;
 }
 
-function trRenderWorkout() {
+async function trRenderWorkout() {
   const container = document.getElementById('trWorkoutContent');
+  showLoading(container);
+  const [routine, allSessions] = await Promise.all([trGetRoutine(), trGetAllSessions()]);
   container.innerHTML = '';
-  const routine = trGetRoutine();
   const units = routine.units || 'kg';
   const today = getActiveDateString();
-  const todaySession = trGetSession(today);
+  const todaySession = await trGetSession(today);
 
   // Units toggle (top row)
   const unitsRow = document.createElement('div');
@@ -1447,7 +1644,7 @@ function trRenderWorkout() {
     const b = document.createElement('button');
     b.className = 'tr-units-btn' + (units === u ? ' active' : '');
     b.textContent = u;
-    b.addEventListener('click', () => { routine.units = u; trSaveRoutine(routine); trRenderWorkout(); });
+    b.addEventListener('click', async () => { routine.units = u; await trSaveRoutine(routine); invalidateCaches(); trRenderWorkout(); });
     tog.appendChild(b);
   });
   unitsRow.appendChild(unitsLabel);
@@ -1455,12 +1652,12 @@ function trRenderWorkout() {
   container.appendChild(unitsRow);
 
   // Detect which day to suggest
-  const suggestedDay = todaySession ? todaySession.day : trDetectTodayDay();
+  const suggestedDay = todaySession ? todaySession.day : trDetectTodayDay(allSessions);
   const DOW_NAMES = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   const todayDowName = DOW_NAMES[new Date().getDay()];
 
   // Day selector banner
-  const hasSessions = storeListKeys('training:session:').length > 0 || routine.days.length > 0;
+  const hasSessions = allSessions.length > 0 || routine.days.length > 0;
 
   if (!todaySession) {
     // Pick-a-day UI
@@ -1481,7 +1678,7 @@ function trRenderWorkout() {
         const tab = document.createElement('button');
         tab.className = 'tr-day-tab' + (day.name === suggestedDay ? ' active' : '');
         tab.textContent = day.name;
-        tab.addEventListener('click', () => { trStartSessionFromRoutine(day.name, today, routine); });
+        tab.addEventListener('click', () => { trStartSessionFromRoutine(day.name, today, routine, allSessions); });
         tabs.appendChild(tab);
       });
       container.appendChild(tabs);
@@ -1504,7 +1701,7 @@ function trRenderWorkout() {
     startBtn.className = 'tr-primary-btn';
     startBtn.style.maxWidth = '260px';
     startBtn.textContent = '+ Start Empty Workout';
-    startBtn.addEventListener('click', () => { trStartEmptySession(today); });
+    startBtn.addEventListener('click', () => { trStartEmptySession(today).then(() => trRenderWorkout()); });
     emptyWrap.appendChild(startBtn);
     container.appendChild(emptyWrap);
 
@@ -1523,7 +1720,7 @@ function trRenderWorkout() {
       '<div class="wk-day-sub">' + todayDowName + ' · ' + formatDate(today) + '</div></div>' +
       '<div class="wk-day-badge">' + (todaySession.done ? '✓ Done' : setsDone + '/' + setsTotal) + '</div>';
     container.appendChild(banner);
-    trRenderNewSessionSets(container, today, units);
+    trRenderNewSessionSets(container, today, units, allSessions);
   }
 
   // ── Add exercises to existing session ──
@@ -1542,11 +1739,12 @@ function trRenderWorkout() {
     const addBtn = document.createElement('button');
     addBtn.className = 'tr-secondary-btn';
     addBtn.textContent = '+ Add';
-    addBtn.addEventListener('click', () => {
+    addBtn.addEventListener('click', async () => {
       const n = addInput.value.trim();
       if (!n) return;
-      const s = trGetSession(today);
-      const last = trLastSessionForEx(n);
+      const s = await trGetSession(today);
+      const sessions = await trGetAllSessions();
+      const last = trLastSessionForEx(sessions, n);
       const defW = last ? last.sets[0].weight : 20;
       const defR = last ? last.sets[0].reps : 8;
       s.exercises.push({ id: trGenId(), name: n, sets: [
@@ -1554,7 +1752,7 @@ function trRenderWorkout() {
         { weight: defW, reps: defR, done: false },
         { weight: defW, reps: defR, done: false },
       ]});
-      trSaveSession(today, s);
+      await trSaveSession(today, s);
       trRenderWorkout();
     });
     addInput.addEventListener('keydown', e => { if (e.key === 'Enter') addBtn.click(); });
@@ -1573,10 +1771,11 @@ function trRenderWorkout() {
   let editorOpen = false;
   const editorWrap = document.createElement('div');
   editorWrap.style.display = 'none';
-  editBtn.addEventListener('click', () => {
+  editBtn.addEventListener('click', async () => {
     editorOpen = !editorOpen;
     editorWrap.style.display = editorOpen ? '' : 'none';
     editBtn.textContent = editorOpen ? '✕ Close Editor' : '⚙️ Edit Training Split';
+    if (editorOpen) trBuildRoutineEditor(editorWrap, routine, units);
   });
   container.appendChild(editBtn);
   trBuildRoutineEditor(editorWrap, routine, units);
@@ -1590,15 +1789,16 @@ function trRenderWorkout() {
   container.appendChild(histLink);
 }
 
-function trStartSessionFromRoutine(dayName, date, routine) {
-  const existing = trGetSession(date);
+async function trStartSessionFromRoutine(dayName, date, routine, allSessions) {
+  const existing = await trGetSession(date);
   if (existing && existing.day === dayName) return trRenderWorkout();
   const day = routine.days.find(d => d.name === dayName);
   if (!day) return;
+  const sessions = allSessions || await trGetAllSessions();
   const session = {
     day: dayName, done: false, date: date,
     exercises: day.exercises.map(ex => {
-      const last = trLastSessionForEx(ex.name);
+      const last = trLastSessionForEx(sessions, ex.name);
       const defW = last ? last.sets[0].weight : (ex.weight || 20);
       const defR = last ? last.sets[0].reps : (ex.repMin || 8);
       return {
@@ -1607,21 +1807,17 @@ function trStartSessionFromRoutine(dayName, date, routine) {
       };
     })
   };
-  trSaveSession(date, session);
+  await trSaveSession(date, session);
   trRenderWorkout();
 }
 
-function trStartEmptySession(date) {
-  const session = {
-    day: 'Workout', done: false, date: date,
-    exercises: []
-  };
-  trSaveSession(date, session);
-  trRenderWorkout();
+async function trStartEmptySession(date) {
+  const session = { day: 'Workout', done: false, date, exercises: [] };
+  await trSaveSession(date, session);
 }
 
-function trRenderNewSessionSets(container, date, units) {
-  const session = trGetSession(date);
+async function trRenderNewSessionSets(container, date, units, allSessions) {
+  const session = await trGetSession(date);
   if (!session) return;
 
   const restEl = document.createElement('div');
@@ -1632,7 +1828,7 @@ function trRenderNewSessionSets(container, date, units) {
   document.getElementById('trRestStop').addEventListener('click', trStopRest);
 
   session.exercises.forEach((ex, exIdx) => {
-    const last = trLastSessionForEx(ex.name);
+    const last = trLastSessionForEx(allSessions || [], ex.name);
     const card = document.createElement('div');
     card.className = 'wk-ex-card';
 
@@ -1642,7 +1838,7 @@ function trRenderNewSessionSets(container, date, units) {
     nameEl.className = 'wk-ex-name';
     nameEl.textContent = ex.name;
     hdr.appendChild(nameEl);
-    const prs = trGetPRs();
+    const prs = _prsCache || {};
     if (prs[ex.id]?.newToday) {
       const badge = document.createElement('span');
       badge.className = 'tr-new-pr-flash';
@@ -1698,17 +1894,17 @@ function trRenderNewSessionSets(container, date, units) {
       const check = document.createElement('div');
       check.className = 'wk-set-check' + (set.done ? ' done' : '');
       check.textContent = set.done ? '✓' : '';
-      check.addEventListener('click', () => {
-        const s = trGetSession(date);
+      check.addEventListener('click', async () => {
+        const s = await trGetSession(date);
         const w = parseFloat(wInp.value) || 0;
         const r = parseInt(rInp.value) || 0;
         s.exercises[exIdx].sets[setIdx].weight = w;
         s.exercises[exIdx].sets[setIdx].reps = r;
         const wasDone = s.exercises[exIdx].sets[setIdx].done;
         s.exercises[exIdx].sets[setIdx].done = !wasDone;
-        trSaveSession(date, s);
+        await trSaveSession(date, s);
         if (!wasDone && w > 0 && r > 0) {
-          trUpdatePRs(ex.id, ex.name, w, r, date);
+          await trUpdatePRs(ex.id, ex.name, w, r, date);
           trStartRest();
         }
         trRenderWorkout();
@@ -1735,10 +1931,10 @@ function trRenderNewSessionSets(container, date, units) {
       completeBtn.disabled = true;
     } else {
       completeBtn.textContent = 'Complete Session ✓';
-      completeBtn.addEventListener('click', () => {
-        const s = trGetSession(date);
+      completeBtn.addEventListener('click', async () => {
+        const s = await trGetSession(date);
         s.done = true;
-        trSaveSession(date, s);
+        await trSaveSession(date, s);
         trStopRest();
         trRenderWorkout();
         trRefreshTiles();
@@ -1767,11 +1963,11 @@ function trStopRest() {
   if (timer) timer.classList.remove('active');
 }
 
-function trComputeTarget(ex) {
-  const sessionKeys = storeListKeys('training:session:').sort().reverse();
+function trComputeTarget(ex, allSessions) {
+  const sorted = [...(allSessions || [])].sort((a,b) => b.date.localeCompare(a.date));
   const history = [];
-  for (const key of sessionKeys) {
-    const s = storeGet(key);
+  for (const row of sorted) {
+    const s = row.data;
     if (!s) continue;
     const exData = s.exercises?.find(e => e.id === ex.id);
     if (!exData) continue;
@@ -1799,8 +1995,8 @@ function trComputeTarget(ex) {
   return { weight: curWeight, reps: ex.repMin, note: 'Same weight' };
 }
 
-function trUpdatePRs(exId, exName, weight, reps, date) {
-  const prs = trGetPRs();
+async function trUpdatePRs(exId, exName, weight, reps, date) {
+  const prs = await trGetPRs();
   const cur = prs[exId] || { maxWeight: 0, maxE1RM: 0, date: '' };
   const e1rm = Math.round(epley(weight, reps) * 10) / 10;
   let newPR = false;
@@ -1809,7 +2005,8 @@ function trUpdatePRs(exId, exName, weight, reps, date) {
   cur.name = exName;
   if (newPR) { cur.date = date; cur.newToday = true; }
   prs[exId] = cur;
-  trSavePRs(prs);
+  _prsCache = prs;
+  await dbSavePR(exId, cur);
 }
 
 function trBuildRoutineEditor(wrap, routine, units) {
@@ -1834,10 +2031,11 @@ function trBuildRoutineEditor(wrap, routine, units) {
     const db = document.createElement('button');
     db.className = 'tr-icon-btn danger';
     db.textContent = '🗑';
-    db.addEventListener('click', () => {
+    db.addEventListener('click', async () => {
       if (!confirm('Delete "' + day.name + '" and all its exercises?')) return;
       routine.days.splice(dayIdx, 1);
-      trSaveRoutine(routine);
+      await trSaveRoutine(routine);
+      invalidateCaches();
       trRenderWorkout();
     });
     dh.appendChild(dn);
@@ -1853,10 +2051,11 @@ function trBuildRoutineEditor(wrap, routine, units) {
       const xb = document.createElement('button');
       xb.className = 'tr-icon-btn danger';
       xb.textContent = '×';
-      xb.addEventListener('click', () => {
+      xb.addEventListener('click', async () => {
         if (!confirm('Remove "' + ex.name + '"?')) return;
         day.exercises.splice(exIdx, 1);
-        trSaveRoutine(routine);
+        await trSaveRoutine(routine);
+        invalidateCaches();
         trRenderWorkout();
       });
       er.appendChild(el);
@@ -1902,11 +2101,12 @@ function trBuildRoutineEditor(wrap, routine, units) {
     addExBtn.className = 'tr-secondary-btn';
     addExBtn.style.width = '100%';
     addExBtn.textContent = '+ Add Exercise';
-    addExBtn.addEventListener('click', () => {
+    addExBtn.addEventListener('click', async () => {
       const n = ni.value.trim();
       if (!n) return;
       day.exercises.push({ id: trGenId(), name: n, sets: parseInt(numInps[0].value)||3, repMin: parseInt(numInps[1].value)||8, repMax: parseInt(numInps[2].value)||12, weight: parseFloat(numInps[3].value)||20, increment: parseFloat(numInps[4].value)||2.5 });
-      trSaveRoutine(routine);
+      await trSaveRoutine(routine);
+      invalidateCaches();
       ni.value = '';
       trRenderWorkout();
     });
@@ -1935,11 +2135,12 @@ function trBuildRoutineEditor(wrap, routine, units) {
   adb.className = 'tr-primary-btn';
   adb.style.cssText = 'width:auto;padding:12px 20px;';
   adb.textContent = '+ Day';
-  adb.addEventListener('click', () => {
+  adb.addEventListener('click', async () => {
     const n = adi.value.trim();
     if (!n) return;
     routine.days.push({ name: n, exercises: [] });
-    trSaveRoutine(routine);
+    await trSaveRoutine(routine);
+    invalidateCaches();
     adi.value = '';
     trRenderWorkout();
   });
@@ -1956,25 +2157,23 @@ function trBuildRoutineEditor(wrap, routine, units) {
 // PROGRESSION SUB-VIEW
 // ════════════════════════════════════════════════════════
 
-function trRenderProgression() {
+async function trRenderProgression() {
   const container = document.getElementById('trProgressionContent');
+  showLoading(container);
+  const [routine, allSessions, prs] = await Promise.all([trGetRoutine(), trGetAllSessions(), trGetPRs()]);
   container.innerHTML = '';
-  const routine = trGetRoutine();
   const units = routine.units || 'kg';
-  const prs = trGetPRs();
 
   // Auto-discover exercises from all session data
-  const exFrequency = {}; // name -> { id, count, lastDate }
-  const sKeys = storeListKeys('training:session:').sort();
-  sKeys.forEach(k => {
-    const s = storeGet(k);
+  const exFrequency = {};
+  allSessions.forEach(row => {
+    const s = row.data;
     if (!s) return;
-    const date = k.slice(17);
     s.exercises?.forEach(ex => {
       if (!ex.name) return;
       if (!exFrequency[ex.name]) exFrequency[ex.name] = { id: ex.id, count: 0, lastDate: '' };
       exFrequency[ex.name].count++;
-      if (date > exFrequency[ex.name].lastDate) exFrequency[ex.name].lastDate = date;
+      if (row.date > exFrequency[ex.name].lastDate) exFrequency[ex.name].lastDate = row.date;
     });
   });
 
@@ -2018,7 +2217,7 @@ function trRenderProgression() {
       const info = exFrequency[exName];
       const exId = info.id;
       const pr = prs[exId];
-      const history = trGetExHistoryByName(exName);
+      const history = trGetExHistoryByNameSync(allSessions, exName);
 
       const card = document.createElement('div');
       card.className = 'tr-prog-exercise';
@@ -2092,28 +2291,11 @@ function trRenderProgression() {
   searchInput.addEventListener('input', () => renderExList(searchInput.value));
 }
 
-function trGetExHistory(exId) {
-  const keys = storeListKeys('training:session:').sort();
+function trGetExHistoryByNameSync(allSessions, exName) {
+  const sorted = [...allSessions].sort((a,b) => a.date.localeCompare(b.date));
   const out = [];
-  for (const key of keys) {
-    const s = storeGet(key);
-    if (!s) continue;
-    const ex = s.exercises?.find(e => e.id === exId);
-    if (!ex) continue;
-    const done = ex.sets.filter(s => s.done && s.weight > 0 && s.reps > 0);
-    if (!done.length) continue;
-    const best = Math.max(...done.map(s => epley(s.weight, s.reps)));
-    const vol = done.reduce((a, s) => a + s.weight * s.reps, 0);
-    out.push({ date: key.slice(17), e1rm: Math.round(best * 10) / 10, volume: Math.round(vol) });
-  }
-  return out;
-}
-
-function trGetExHistoryByName(exName) {
-  const keys = storeListKeys('training:session:').sort();
-  const out = [];
-  for (const key of keys) {
-    const s = storeGet(key);
+  for (const row of sorted) {
+    const s = row.data;
     if (!s) continue;
     const ex = s.exercises?.find(e => e.name?.toLowerCase() === exName.toLowerCase());
     if (!ex) continue;
@@ -2121,7 +2303,7 @@ function trGetExHistoryByName(exName) {
     if (!done.length) continue;
     const best = Math.max(...done.map(s => epley(s.weight, s.reps)));
     const vol = done.reduce((a, s) => a + s.weight * s.reps, 0);
-    out.push({ date: key.slice(17), e1rm: Math.round(best * 10) / 10, volume: Math.round(vol) });
+    out.push({ date: row.date, e1rm: Math.round(best * 10) / 10, volume: Math.round(vol) });
   }
   return out;
 }
@@ -2171,14 +2353,14 @@ function trLineChart(values, color) {
 // NUTRITION SUB-VIEW
 // ════════════════════════════════════════════════════════
 
-function trRenderNutrition() {
+async function trRenderNutrition() {
   const container = document.getElementById('trNutritionContent');
-  container.innerHTML = '';
-  const targets = storeGet('nutrition:targets');
-  if (!targets) { trNutritionSetup(container, false); return; }
-
+  showLoading(container);
   const today = getActiveDateString();
-  const log = storeGet('nutrition:log:' + today) || { kcal: 0, protein: 0, carbs: 0, fat: 0 };
+  const [targets, log] = await Promise.all([dbGetNutritionTargets(), dbGetNutritionLog(today)]);
+  container.innerHTML = '';
+  if (!targets) { trNutritionSetup(container, false); return; }
+  const logData = log || { kcal: 0, protein: 0, carbs: 0, fat: 0 };
 
   // ── Summary card ──
   const sc = document.createElement('div');
@@ -2187,12 +2369,12 @@ function trRenderNutrition() {
 
   const calRow = document.createElement('div');
   calRow.style.cssText = 'display:flex;align-items:center;gap:18px;margin-bottom:20px;';
-  const rsvg = trRingSvg((log.kcal || 0) / targets.kcal, '#F2C063', 82);
+  const rsvg = trRingSvg((logData.kcal || 0) / targets.kcal, '#F2C063', 82);
   calRow.appendChild(rsvg);
   const calInfo = document.createElement('div');
-  const remaining = Math.max(0, targets.kcal - (log.kcal || 0));
+  const remaining = Math.max(0, targets.kcal - (logData.kcal || 0));
   calInfo.innerHTML =
-    '<div style="font-size:28px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-0.04em;line-height:1;">' + (log.kcal || 0).toLocaleString() + '</div>' +
+    '<div style="font-size:28px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-0.04em;line-height:1;">' + (logData.kcal || 0).toLocaleString() + '</div>' +
     '<div style="font-family:var(--font-mono);font-size:11px;color:var(--text-tertiary);margin-top:4px;">of ' + targets.kcal.toLocaleString() + ' kcal goal</div>' +
     '<div style="font-family:var(--font-mono);font-size:11px;color:var(--text-secondary);margin-top:3px;">' + remaining.toLocaleString() + ' remaining</div>';
   calRow.appendChild(calInfo);
@@ -2209,12 +2391,12 @@ function trRenderNutrition() {
     bw.style.flex = '1';
     const bf = document.createElement('div');
     bf.className = 'tr-seg-bar-fill';
-    bf.style.width = Math.min(100, Math.round((log[key] || 0) / (targets[key] || 1) * 100)) + '%';
+    bf.style.width = Math.min(100, Math.round((logData[key] || 0) / (targets[key] || 1) * 100)) + '%';
     bf.style.background = col;
     bw.appendChild(bf);
     const nm = document.createElement('div');
     nm.style.cssText = 'font-family:var(--font-mono);font-size:11px;color:var(--text-secondary);font-variant-numeric:tabular-nums;width:60px;text-align:right;white-space:nowrap;';
-    nm.textContent = (log[key] || 0) + '/' + targets[key] + 'g';
+    nm.textContent = (logData[key] || 0) + '/' + targets[key] + 'g';
     row.appendChild(ll); row.appendChild(bw); row.appendChild(nm);
     sc.appendChild(row);
   });
@@ -2237,10 +2419,10 @@ function trRenderNutrition() {
   grid.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;';
 
   const fields = [
-    ['Calories (kcal)', 'kcal', log.kcal || 0],
-    ['Protein (g)', 'protein', log.protein || 0],
-    ['Carbs (g)', 'carbs', log.carbs || 0],
-    ['Fat (g)', 'fat', log.fat || 0],
+    ['Calories (kcal)', 'kcal', logData.kcal || 0],
+    ['Protein (g)', 'protein', logData.protein || 0],
+    ['Carbs (g)', 'carbs', logData.carbs || 0],
+    ['Fat (g)', 'fat', logData.fat || 0],
   ];
   const inps = {};
   fields.forEach(([lbl, key, val]) => {
@@ -2264,14 +2446,14 @@ function trRenderNutrition() {
   const saveBtn = document.createElement('button');
   saveBtn.className = 'tr-primary-btn';
   saveBtn.textContent = 'Save Today\'s Macros';
-  saveBtn.addEventListener('click', () => {
+  saveBtn.addEventListener('click', async () => {
     const entry = {
       kcal: parseInt(inps.kcal.value) || 0,
       protein: parseInt(inps.protein.value) || 0,
       carbs: parseInt(inps.carbs.value) || 0,
       fat: parseInt(inps.fat.value) || 0,
     };
-    storeSet('nutrition:log:' + today, entry);
+    await dbSaveNutritionLog(today, entry);
     trRenderNutrition();
     trRefreshTiles();
   });
@@ -2286,8 +2468,8 @@ function trRenderNutrition() {
   container.appendChild(sb);
 }
 
-function trNutritionSetup(container, hasBack) {
-  const existing = storeGet('nutrition:targets') || { mode: 'maintain', kcal: 2200, protein: 170, carbs: 220, fat: 60 };
+async function trNutritionSetup(container, hasBack) {
+  const existing = (await dbGetNutritionTargets()) || { mode: 'maintain', kcal: 2200, protein: 170, carbs: 220, fat: 60 };
   if (hasBack) {
     const bb = document.createElement('button');
     bb.className = 'tr-secondary-btn';
@@ -2335,7 +2517,7 @@ function trNutritionSetup(container, hasBack) {
     card.appendChild(w);
   });
 
-  const bwData = storeGet('body:weight') || [];
+  const bwData = await dbGetBodyWeight();
   if (bwData.length > 0) {
     const bw = bwData[bwData.length - 1].kg;
     const hint = document.createElement('div');
@@ -2360,8 +2542,8 @@ function trNutritionSetup(container, hasBack) {
   sv.className = 'tr-primary-btn';
   sv.style.marginTop = '4px';
   sv.textContent = 'Save Targets';
-  sv.addEventListener('click', () => {
-    storeSet('nutrition:targets', {
+  sv.addEventListener('click', async () => {
+    await dbSaveNutritionTargets({
       mode: inps.mode.value,
       kcal: parseInt(inps.kcal.value) || 2200,
       protein: parseInt(inps.protein.value) || 170,
@@ -2406,11 +2588,12 @@ function trRingSvg(pct, color, size) {
 // BODY SUB-VIEW
 // ════════════════════════════════════════════════════════
 
-function trRenderBody() {
+async function trRenderBody() {
   const container = document.getElementById('trBodyContent');
+  showLoading(container);
+  const [entries, routine] = await Promise.all([dbGetBodyWeight(), trGetRoutine()]);
   container.innerHTML = '';
-  const entries = storeGet('body:weight') || [];
-  const units = (trGetRoutine().units || 'kg');
+  const units = routine.units || 'kg';
 
   if (entries.length > 0) {
     const last = entries[entries.length - 1];
@@ -2473,8 +2656,7 @@ function trRenderBody() {
     e.textContent = 'No weight entries yet.';
     lc.appendChild(e);
   } else {
-    [...entries].reverse().slice(0, 12).forEach((entry, ri) => {
-      const idx = entries.length - 1 - ri;
+    [...entries].reverse().slice(0, 12).forEach(entry => {
       const row = document.createElement('div');
       row.className = 'tr-row';
       const kd = units === 'lb' ? (entry.kg * 2.20462).toFixed(1) + ' lb' : entry.kg + ' kg';
@@ -2484,11 +2666,9 @@ function trRenderBody() {
       const db = document.createElement('button');
       db.className = 'tr-icon-btn danger';
       db.textContent = '×';
-      db.addEventListener('click', () => {
+      db.addEventListener('click', async () => {
         if (!confirm('Delete this entry?')) return;
-        const arr = storeGet('body:weight') || [];
-        arr.splice(idx, 1);
-        storeSet('body:weight', arr);
+        await dbDeleteBodyWeight(entry.id);
         trRenderBody(); trRefreshTiles();
       });
       row.appendChild(inf); row.appendChild(db);
@@ -2511,8 +2691,7 @@ function trRenderBody() {
   ki.placeholder = 'Weight (kg)';
   ki.inputMode = 'decimal';
   ki.style.flex = '1';
-  const band = storeGet('band:latest');
-  if (band?.weight) ki.value = band.weight;
+  // band integration removed (was localStorage only)
   const wi = document.createElement('input');
   wi.className = 'tr-input';
   wi.type = 'number';
@@ -2525,15 +2704,13 @@ function trRenderBody() {
   const ab = document.createElement('button');
   ab.className = 'tr-primary-btn';
   ab.textContent = '+ Log Weight';
-  ab.addEventListener('click', () => {
+  ab.addEventListener('click', async () => {
     const kg = parseFloat(ki.value);
     if (!kg || kg <= 0) return;
-    const arr = storeGet('body:weight') || [];
     const entry = { date: getActiveDateString(), kg };
     const w = parseFloat(wi.value);
     if (w > 0) entry.measurements = { waist: w };
-    arr.push(entry);
-    storeSet('body:weight', arr);
+    await dbAddBodyWeight(entry);
     ki.value = ''; wi.value = '';
     trRenderBody(); trRefreshTiles();
   });
@@ -2547,8 +2724,10 @@ function trRenderBody() {
 // HISTORY SUB-VIEW
 // ════════════════════════════════════════════════════════
 
-function trRenderHistory() {
+async function trRenderHistory() {
   const container = document.getElementById('trHistoryContent');
+  showLoading(container);
+  const allSessions = await trGetAllSessions(); // already sorted date.desc
   container.innerHTML = '';
 
   // Import button always at top
@@ -2559,9 +2738,7 @@ function trRenderHistory() {
   importBtn.addEventListener('click', () => hevyShowImportUI(container));
   container.appendChild(importBtn);
 
-  const keys = storeListKeys('training:session:').sort().reverse();
-
-  if (keys.length === 0) {
+  if (allSessions.length === 0) {
     const e = document.createElement('div');
     e.className = 'empty-state';
     e.style.padding = '40px 0';
@@ -2570,10 +2747,10 @@ function trRenderHistory() {
     return;
   }
 
-  keys.forEach(key => {
-    const session = storeGet(key);
+  allSessions.forEach(row => {
+    const session = row.data;
     if (!session) return;
-    const dateStr = key.slice(17);
+    const dateStr = row.date;
     const doneSets = session.exercises.reduce((a, ex) => a + ex.sets.filter(s => s.done).length, 0);
     const totalSets = session.exercises.reduce((a, ex) => a + ex.sets.length, 0);
     const vol = session.exercises.reduce((a, ex) => a + ex.sets.filter(s => s.done).reduce((b, s) => b + s.weight * s.reps, 0), 0);
@@ -2726,16 +2903,15 @@ function hevyParseCSV(text) {
   });
 }
 
-function hevyImport(sessions) {
+async function hevyImport(sessions) {
   let imported = 0, skipped = 0;
-  const prs = trGetPRs();
+  const existingRows = await trGetAllSessions();
+  const existingDates = new Set(existingRows.map(r => r.date));
+  const prs = await trGetPRs();
 
-  sessions.forEach(session => {
-    const storageKey = 'training:session:' + session.date;
-    const existing = storeGet(storageKey);
-    if (existing) { skipped++; return; }
+  for (const session of sessions) {
+    if (existingDates.has(session.date)) { skipped++; continue; }
 
-    // Assign stable IDs to exercises and update PRs
     session.exercises.forEach(ex => {
       ex.sets.forEach(set => {
         if (set.weight > 0 && set.reps > 0) {
@@ -2750,11 +2926,13 @@ function hevyImport(sessions) {
       });
     });
 
-    storeSet(storageKey, session);
+    await dbSaveSession(session.date, session);
     imported++;
-  });
+  }
 
-  trSavePRs(prs);
+  _prsCache = prs;
+  for (const [exId, pr] of Object.entries(prs)) await dbSavePR(exId, pr);
+  _sessionsCache = null;
   return { imported, skipped };
 }
 
@@ -2825,7 +3003,7 @@ function hevyShowImportUI(container) {
     statusEl.textContent = 'Reading file…';
     statusEl.style.color = 'var(--text-tertiary)';
     const reader = new FileReader();
-    reader.onload = e => {
+    reader.onload = async e => {
       try {
         const sessions = hevyParseCSV(e.target.result);
         if (sessions.length === 0) {
@@ -2833,15 +3011,15 @@ function hevyShowImportUI(container) {
           statusEl.style.color = 'var(--danger)';
           return;
         }
-        const { imported, skipped } = hevyImport(sessions);
+        statusEl.textContent = 'Importing ' + sessions.length + ' sessions…';
+        const { imported, skipped } = await hevyImport(sessions);
         statusEl.style.color = 'var(--success)';
         statusEl.textContent = '✓ Imported ' + imported + ' session' + (imported !== 1 ? 's' : '') +
           (skipped > 0 ? ' · ' + skipped + ' already existed' : '') + '.';
         trRefreshTiles();
-        // Show view history after short delay
         setTimeout(() => trRenderHistory(), 1200);
       } catch (err) {
-        statusEl.textContent = 'Failed to parse CSV: ' + err.message;
+        statusEl.textContent = 'Failed: ' + err.message;
         statusEl.style.color = 'var(--danger)';
       }
     };
@@ -2850,7 +3028,16 @@ function hevyShowImportUI(container) {
 }
 
 // ── Init ──
-trRefreshTiles();
+async function init() {
+  updateDashDate();
+  updateDayBar();
+  setInterval(updateDayBar, 60 * 1000);
+  startTicker();
+  await migrateFromLocalStorage();
+  await trRefreshTiles();
+}
+
+init();
 </script>
 </body>
 </html>
