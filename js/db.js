@@ -178,6 +178,64 @@ export async function trGetAllSessions() {
 export function trGenId() { return Math.random().toString(36).slice(2, 10); }
 export function epley(w, r) { return r === 1 ? w : w * (1 + r / 30); }
 
+// ── Finance data layer ──
+export async function dbGetFinanceBudget() {
+  try {
+    const rows = await sbSelect('finance_budget', 'id=eq.1');
+    if (!rows[0]) return { income:0, needs:0, wants:0, debtSavings:0, fixedBills:0, plannedSavings:0, debtPayments:0 };
+    return rows[0].data;
+  } catch(e) { showToast('Load budget failed: ' + e.message, 'error'); return { income:0, needs:0, wants:0, debtSavings:0, fixedBills:0, plannedSavings:0, debtPayments:0 }; }
+}
+export async function dbSaveFinanceBudget(data) {
+  await sbUpsert('finance_budget', { id: 1, data });
+}
+
+export async function dbGetFinanceTransactions() {
+  try { return await sbSelect('finance_transactions', 'order=date.desc,created_at.desc'); } catch(e) { return []; }
+}
+export async function dbAddFinanceTransaction(t) {
+  await sbInsert('finance_transactions', { id: t.id, name: t.name, amount: t.amount, date: t.date, category: t.category || null, bucket: t.bucket, type: t.type });
+}
+export async function dbDeleteFinanceTransaction(id) {
+  await sbDelete('finance_transactions', 'id=eq.' + id);
+}
+
+export async function dbGetFinanceGoals() {
+  try { return await sbSelect('finance_goals', 'order=created_at.asc'); } catch(e) { return []; }
+}
+export async function dbAddFinanceGoal(g) {
+  await sbInsert('finance_goals', { id: g.id, name: g.name, target: g.target, current: g.current });
+}
+export async function dbUpdateFinanceGoal(id, current) {
+  const r = await fetch(SUPABASE_URL + '/rest/v1/finance_goals?id=eq.' + id, {
+    method: 'PATCH',
+    headers: sbHeaders({ 'Prefer': 'return=minimal' }),
+    body: JSON.stringify({ current })
+  });
+  if (!r.ok) throw new Error(await r.text());
+}
+export async function dbDeleteFinanceGoal(id) {
+  await sbDelete('finance_goals', 'id=eq.' + id);
+}
+
+export async function dbGetFinanceBills() {
+  try { return await sbSelect('finance_bills', 'order=due_date.asc'); } catch(e) { return []; }
+}
+export async function dbAddFinanceBill(b) {
+  await sbInsert('finance_bills', { id: b.id, name: b.name, amount: b.amount, due_date: b.dueDate || null, paid: false });
+}
+export async function dbToggleFinanceBill(id, paid) {
+  const r = await fetch(SUPABASE_URL + '/rest/v1/finance_bills?id=eq.' + id, {
+    method: 'PATCH',
+    headers: sbHeaders({ 'Prefer': 'return=minimal' }),
+    body: JSON.stringify({ paid })
+  });
+  if (!r.ok) throw new Error(await r.text());
+}
+export async function dbDeleteFinanceBill(id) {
+  await sbDelete('finance_bills', 'id=eq.' + id);
+}
+
 // ── One-time migration from localStorage → Supabase ──
 export async function migrateFromLocalStorage() {
   if (localStorage.getItem('sb_migrated')) return;
