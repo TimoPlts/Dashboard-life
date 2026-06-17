@@ -74,12 +74,27 @@
         <div class="tile-stat" id="gymTileStat">Workout · Nutrition</div>
         <span class="tile-arrow">›</span>
       </div>
-      <div class="quick-tile" id="statsPlaceholderTile" style="cursor:default;opacity:0.5;">
-        <div class="tile-icon">📊</div>
-        <div class="tile-title">Stats</div>
-        <div class="tile-stat">Coming soon</div>
+      <div class="quick-tile finance-tile" id="financeTile" role="button" tabindex="0">
+        <div class="tile-icon">💵</div>
+        <div class="tile-title">Finance</div>
+        <div class="tile-stat" id="financeTileStat">Budget · Spending</div>
+        <span class="tile-arrow">›</span>
       </div>
     </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════
+       FINANCE VIEW
+  ══════════════════════════════════ -->
+  <div id="viewFinance" class="view">
+
+    <div class="gym-header">
+      <button class="back-btn" id="financeBackBtn" aria-label="Back to Dashboard">←</button>
+      <div class="gym-page-title">💵 Finance</div>
+    </div>
+
+    <div id="viewFinanceContent"></div>
 
   </div>
 

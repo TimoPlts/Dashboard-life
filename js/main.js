@@ -5,6 +5,7 @@ import { trRenderProgression } from './progression.js';
 import { trRenderNutrition } from './nutrition.js';
 import { trRenderBody } from './body.js';
 import { trRenderHistory } from './history.js';
+import { renderFinance } from './finance.js';
 
 function showView(id) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -46,6 +47,22 @@ document.getElementById('gymTile').addEventListener('keydown', e => {
 });
 
 document.getElementById('gymBackBtn').addEventListener('click', () => {
+  showView('viewDash');
+});
+
+document.getElementById('financeTile').addEventListener('click', () => {
+  showView('viewFinance');
+  renderFinance();
+});
+document.getElementById('financeTile').addEventListener('keydown', e => {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    showView('viewFinance');
+    renderFinance();
+  }
+});
+
+document.getElementById('financeBackBtn').addEventListener('click', () => {
   showView('viewDash');
 });
 

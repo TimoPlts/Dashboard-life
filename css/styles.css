@@ -778,3 +778,417 @@ select.tr-input option { background: #1a1a1b; color: var(--text-primary); }
 .hist-ex-name { font-size: 12px; font-weight: 700; color: var(--text-secondary); margin-bottom: 5px; }
 .hist-set-line { font-family: var(--font-mono); font-size: 11px; color: var(--text-tertiary); margin-bottom: 3px; display: flex; gap: 12px; }
 .hist-set-line span { color: var(--text-primary); }
+
+/* ══════════════════════════════════
+   FINANCE MODULE
+══════════════════════════════════ */
+
+/* Finance tile */
+.quick-tile.finance-tile {
+  border-color: rgba(107,227,164,0.25);
+  background: rgba(107,227,164,0.05);
+}
+.quick-tile.finance-tile::before {
+  background: radial-gradient(ellipse at 50% 0%, rgba(107,227,164,0.10), transparent 60%);
+}
+.quick-tile.finance-tile:hover {
+  background: rgba(107,227,164,0.09);
+  border-color: rgba(107,227,164,0.45);
+}
+
+/* Hero card */
+.fn-hero-card {
+  text-align: center;
+  margin-bottom: 12px;
+  padding: 28px 20px 24px;
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(255,255,255,0.10);
+}
+.fn-hero-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.20em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  margin-bottom: 10px;
+}
+.fn-hero-amount {
+  font-family: var(--font-mono);
+  font-size: 46px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+.fn-hero-sub {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+/* Summary cards row */
+.fn-summary-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.fn-sum-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px 12px;
+  text-align: center;
+}
+.fn-sum-value {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  margin-bottom: 5px;
+}
+.fn-sum-label {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+/* Insight box */
+.fn-insight-card {
+  padding: 16px 18px;
+  margin-bottom: 24px;
+  background: rgba(255,255,255,0.028);
+  border-style: dashed;
+}
+.fn-insight-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.20em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  margin-bottom: 7px;
+}
+.fn-insight-text {
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* Bucket cards */
+.fn-buckets-wrap { margin-bottom: 10px; }
+.fn-bucket-card {
+  margin-bottom: 10px;
+  padding: 18px 18px 16px;
+}
+.fn-bucket-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.fn-bucket-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+.fn-bucket-desc {
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+.fn-bucket-amounts {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  white-space: nowrap;
+  text-align: right;
+  flex-shrink: 0;
+}
+.fn-bucket-spent {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.fn-bucket-sep { color: var(--text-tertiary); }
+.fn-bucket-budget { color: var(--text-tertiary); }
+.fn-bucket-remaining {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  margin-top: 7px;
+}
+
+/* Progress bar */
+.fn-progress-wrap { margin-top: 6px; }
+.fn-progress-bar {
+  height: 5px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.fn-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.45s cubic-bezier(0.22,1,0.36,1);
+}
+.fn-progress-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 6px;
+}
+.fn-progress-status { font-size: 11px; font-weight: 600; }
+.fn-progress-pct { font-family: var(--font-mono); font-size: 10px; color: var(--text-tertiary); }
+
+/* Add button */
+.fn-add-btn {
+  width: 100%;
+  margin-bottom: 10px;
+  font-size: 13px;
+}
+
+/* Empty states */
+.fn-empty-state {
+  text-align: center;
+  padding: 24px 20px;
+  color: var(--text-tertiary);
+  font-size: 13px;
+  line-height: 1.5;
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-md);
+  margin-bottom: 10px;
+}
+.fn-empty-hint {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  margin-top: 10px;
+  font-style: italic;
+}
+
+/* Transactions list */
+.fn-txn-list {
+  margin-bottom: 8px;
+}
+.fn-txn-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 13px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin-bottom: 8px;
+  transition: border-color 0.15s;
+}
+.fn-txn-row:hover { border-color: var(--border-strong); }
+.fn-txn-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+.fn-txn-icon { font-size: 18px; flex-shrink: 0; }
+.fn-txn-info { min-width: 0; }
+.fn-txn-name {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fn-txn-meta {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+.fn-txn-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.fn-txn-amount {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Icon buttons (delete, etc.) */
+.fn-icon-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: none;
+  border: 1px solid transparent;
+  color: var(--text-tertiary);
+  font-size: 11px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0;
+}
+.fn-icon-btn:hover { background: rgba(255,107,107,0.12); color: var(--danger); border-color: rgba(255,107,107,0.25); }
+
+/* Bills list */
+.fn-bill-list { margin-bottom: 10px; }
+.fn-bill-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 13px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin-bottom: 8px;
+  transition: opacity 0.2s, border-color 0.15s;
+}
+.fn-bill-row:hover { border-color: var(--border-strong); }
+.fn-bill-row.fn-bill-paid { opacity: 0.5; }
+.fn-bill-left { flex: 1; min-width: 0; }
+.fn-bill-name { font-size: 13.5px; font-weight: 600; color: var(--text-primary); }
+.fn-bill-due { font-family: var(--font-mono); font-size: 10px; color: var(--text-tertiary); margin-top: 2px; }
+.fn-bill-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.fn-bill-amount {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+}
+.fn-toggle-btn {
+  font-size: 11px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+.fn-toggle-btn:hover { background: var(--surface-hover); border-color: var(--border-strong); }
+.fn-toggle-btn.fn-toggle-paid { background: rgba(107,227,164,0.1); border-color: rgba(107,227,164,0.3); color: var(--success); }
+
+/* Goals list */
+.fn-goal-list { margin-bottom: 10px; }
+.fn-goal-card {
+  margin-bottom: 10px;
+  padding: 16px 18px;
+}
+.fn-goal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.fn-goal-name { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+.fn-goal-pct { font-family: var(--font-mono); font-size: 13px; font-weight: 800; }
+.fn-goal-amounts {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-tertiary);
+  margin-top: 7px;
+  margin-bottom: 10px;
+}
+.fn-goal-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.fn-btn-sm {
+  font-size: 11px !important;
+  padding: 6px 12px !important;
+  height: auto !important;
+}
+
+/* Budget settings */
+.fn-budget-card { padding: 18px 18px 20px; margin-bottom: 40px; }
+.fn-save-budget-btn { width: 100%; margin-top: 6px; }
+
+/* Form helpers */
+.fn-form-group { margin-bottom: 14px; }
+.fn-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.fn-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  margin-bottom: 6px;
+}
+
+/* Modal overlay */
+.fn-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.24s;
+  padding: 0 0 env(safe-area-inset-bottom, 0);
+}
+.fn-modal-overlay.fn-modal-visible { opacity: 1; }
+.fn-modal {
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  padding: 24px 20px 32px;
+  transform: translateY(30px);
+  transition: transform 0.24s cubic-bezier(0.22,1,0.36,1);
+  background: #111113;
+  border: 1px solid var(--border-strong);
+  border-bottom: none;
+}
+.fn-modal-overlay.fn-modal-visible .fn-modal { transform: translateY(0); }
+.fn-modal-title {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin-bottom: 18px;
+}
+.fn-modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+.fn-modal-actions .tr-secondary-btn,
+.fn-modal-actions .tr-primary-btn {
+  flex: 1;
+}
