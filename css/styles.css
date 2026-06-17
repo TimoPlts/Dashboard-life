@@ -103,6 +103,26 @@ body::after {
   margin-top: 4px;
 }
 
+/* ── Logout button ── */
+.logout-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-tertiary);
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  flex-shrink: 0;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.logout-btn:hover { background: var(--surface-hover); border-color: var(--border-strong); color: var(--text-primary); }
+.logout-btn:active { transform: scale(0.94); }
+
 /* ── Goal Ticker ── */
 .goal-ticker {
   display: flex;
